@@ -71,7 +71,7 @@ Todas as contas são criadas pelo usuário, no plano gratuito. Pode entrar com a
 
 ### 3. Ligar o app ao backend
 
-Trocar `ENDERECO-DO-BACKEND` em `frontend/vercel.json` pelo nome do serviço do Render e fazer push. O endereço não é segredo.
+Em `frontend/vercel.json`, o repasse de `/api` aponta para o endereço do serviço do Render (hoje `https://appdehabitos.onrender.com`). Se o serviço mudar de nome, trocar ali e fazer push. O endereço não é segredo.
 
 ### 4. Vercel (app)
 

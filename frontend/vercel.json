@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://ENDERECO-DO-BACKEND.onrender.com/api/:path*"
+      "destination": "https://appdehabitos.onrender.com/api/:path*"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
