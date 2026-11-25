@@ -25,6 +25,15 @@ function mlField(min: number, max: number) {
     )
 }
 
+/** Registro livre: mesmos limites do lembrete. */
+export const INTAKE_MIN_ML = REMINDER_MIN_ML
+export const INTAKE_MAX_ML = REMINDER_MAX_ML
+
+/** Botões rápidos do registro livre (escolha do usuário). */
+export const QUICK_AMOUNTS_ML = [200, 300, 500] as const
+
+export const intakeSchema = z.object({ amountMl: mlField(INTAKE_MIN_ML, INTAKE_MAX_ML) })
+
 export const goalSchema = z.object({ goalMl: mlField(GOAL_MIN_ML, GOAL_MAX_ML) })
 
 export const reminderSchema = z.object({

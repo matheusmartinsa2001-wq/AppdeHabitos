@@ -20,6 +20,12 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
+- [x] **Etapa 8 — Água do dia** (2026-11-25): tela inicial com:
+  - total × meta, barra de progresso e "quanto falta";
+  - "Tomei" nos lembretes;
+  - registro livre (+200/+300/+500 e outro valor);
+  - lista dos registros de hoje com "Desfazer";
+  - aviso quando os lembretes não somam a meta.
 - [x] **Etapa 7 — Água: meta e lembretes** (2026-11-25): tela `/agua/configuracao`, com:
   - meta diária com histórico por dia;
   - lembretes (criar, editar, excluir; sem horário repetido);
@@ -31,7 +37,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 7 — Água: configuração (meta e lembretes)**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
+- **Etapa 8 — Água do dia**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
 
 ## Próximas funcionalidades
 

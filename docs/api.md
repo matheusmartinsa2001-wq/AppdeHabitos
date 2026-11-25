@@ -109,6 +109,41 @@ Corpo `{ "time": "08:30", "amountMl": 500 }`. No `PATCH`, os dois campos são op
 - `204` com exclusão lógica (`deletedAt`), que libera o horário.
 - `404` se não existir.
 
+## Água do dia (`/api/water`)
+
+Todas exigem login. Só o dia de hoje (Brasília) pode ser alterado.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/water/today` | Resumo de hoje |
+| POST | `/water/reminders/:id/confirm` | "Tomei": registra hoje a quantidade do lembrete |
+| POST | `/water/intakes` | Registro livre: `{ "amountMl": 300 }` (50 a 2.000) |
+| DELETE | `/water/intakes/:id` | Desfaz um registro de hoje |
+
+Todas respondem com o resumo de hoje (`200`, ou `201` no registro livre):
+
+```json
+{
+  "day": "2026-11-25",
+  "goalMl": 3000,
+  "totalMl": 1300,
+  "remainingMl": 1700,
+  "goalReached": false,
+  "remindersShortfallMl": 500,
+  "reminders": [{ "id": "uuid", "time": "08:00", "amountMl": 1000, "intakeId": "uuid-ou-null" }],
+  "intakes": [{ "id": "uuid", "time": "08:05", "amountMl": 1000, "source": "REMINDER", "reminderTime": "08:00" }]
+}
+```
+
+- Sem meta, `goalMl`, `remainingMl`, `goalReached` e `remindersShortfallMl` são `null`.
+- `goalReached` é verdadeiro quando o total é maior ou igual à meta.
+- `intakes` vêm do mais recente para o mais antigo. `time` é a hora do registro em Brasília.
+- Erros:
+  - `409`: `"O lembrete das 08:00 já foi marcado hoje"`;
+  - `409`: `"Registros de dias anteriores não podem ser alterados"`;
+  - `404`: lembrete (inexistente ou excluído) ou registro não encontrado;
+  - `400`: validação.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

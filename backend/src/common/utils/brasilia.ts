@@ -14,6 +14,17 @@ export interface BrasiliaNow {
   minuteOfDay: number;
 }
 
+/** "HH:MM" de um instante, no horário de Brasília. */
+export function brasiliaTime(instant: Date): string {
+  const { minuteOfDay } = brasiliaNow(instant);
+  return `${String(Math.floor(minuteOfDay / 60)).padStart(2, '0')}:${String(minuteOfDay % 60).padStart(2, '0')}`;
+}
+
+/** Dia de calendário (coluna `date`) como "YYYY-MM-DD". */
+export function toDayString(day: Date): string {
+  return day.toISOString().slice(0, 10);
+}
+
 export function brasiliaNow(now = new Date()): BrasiliaNow {
   const parts = Object.fromEntries(
     new Intl.DateTimeFormat('en-CA', {

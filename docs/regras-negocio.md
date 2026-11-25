@@ -44,7 +44,7 @@ Há duas formas, e as duas somam no total do dia:
 
 - **Confirmar o lembrete** ("tomei"): soma a quantidade daquele lembrete. Cada lembrete só pode ser confirmado **uma vez por dia**, e a confirmação pode ser feita antes do horário dele (2026-11-25).
 - **Registro livre**: soma uma quantidade a qualquer hora (ex.: botões de +200, +300 e +500 mL).
-  - Botões rápidos de +200, +300 e +500 mL, mais um campo para digitar outro valor.
+  - Botões rápidos de +200, +300 e +500 mL, mais um campo para digitar outro valor, de **50 a 2.000 mL** (mesmos limites do lembrete).
 
 Regras de edição:
 
@@ -53,7 +53,10 @@ Regras de edição:
 
 ### Quanto falta
 
-- A tela do dia mostra o total tomado, a meta do dia e **quanto falta** para chegar nela.
+- A tela do dia (tela inicial do app) mostra o total tomado, a meta do dia e **quanto falta** para chegar nela, com barra de progresso. Quando chega à meta, mostra "Meta batida!".
+- Mostra também os lembretes de hoje (quais já foram tomados) e a lista de registros de hoje, cada um com hora, quantidade, origem (lembrete ou livre) e "Desfazer".
+- Desfazer o registro de um lembrete libera o "Tomei" desse lembrete de novo.
+- Um lembrete excluído depois de confirmado sai da lista de lembretes, mas o registro dele continua contando no dia.
 
 ### Bateu a meta
 

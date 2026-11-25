@@ -12,6 +12,27 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 8: Água do dia
+
+**Tipo**: Backend + frontend
+
+- **API**:
+  - `GET /api/water/today`;
+  - `POST /api/water/reminders/:id/confirm` ("tomei", uma vez por dia; 409 se repetir);
+  - `POST /api/water/intakes` (registro livre de 50 a 2.000 mL);
+  - `DELETE /api/water/intakes/:id` (só de hoje; 409 para dias anteriores).
+- **Tela inicial (`/`) agora é a Água do dia**:
+  - total × meta com barra de progresso e "Faltam X mL" / "Meta batida!";
+  - lembretes de hoje com "Tomei" / "✓ Desfazer";
+  - registro livre com +200/+300/+500 e outro valor;
+  - lista dos registros de hoje com "Desfazer";
+  - aviso quando os lembretes somam menos que a meta.
+  - A tela provisória da conexão saiu.
+- **Testes**: backend com 43 unitários e 33 ponta a ponta; frontend com 37.
+- **Verificado no navegador** (tamanho de celular): "Tomei", +300, total e quanto falta atualizados, e os registros listados.
+
+---
+
 ## 2026-11-25 — Etapa 7: Água, meta diária e lembretes
 
 **Tipo**: Backend + frontend
