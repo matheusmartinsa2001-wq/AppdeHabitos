@@ -37,7 +37,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 9 — Notificações dos lembretes**: código pronto, testado e publicado em 2026-11-25. Falta o usuário colocar as chaves no Render, criar o cron no cron-job.org e testar no iPhone.
+- **Etapa 9 — Notificações dos lembretes**: no ar e funcionando no iPhone (chaves no Render e cron no cron-job.org configurados pelo usuário) em 2026-11-25, aguardando aprovação.
 
 ## Próximas funcionalidades
 
@@ -48,6 +48,8 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 Nenhum bug em aberto no momento.
 
 ## Melhorias técnicas (não bloqueantes, sem prioridade definida)
+
+- **Vibração da notificação**: o app não controla. No iPhone, som e vibração das notificações de apps da web seguem os ajustes do iOS (Ajustes → Notificações → Hábitos → Sons; Sons e Tátil), e o Safari ignora a opção `vibrate`. Orientação passada ao usuário em 2026-11-25.
 
 - **Conferir `TRUST_PROXY_HOPS=2` em produção**: o limite de login deve contar por IP do aparelho, e não pelo IP da Vercel.
 - **`npm audit` do frontend**: 4 avisos moderados em `minimatch`, dependência de build do `vite-plugin-pwa`/workbox. Afeta só o build, não o app no celular. A correção sugerida (`--force`) rebaixaria o plugin para a 1.x. Rever quando sair versão nova.

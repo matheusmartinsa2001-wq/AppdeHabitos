@@ -32,6 +32,7 @@ Registro resumido de cada entrega. Mais recente no topo.
   - o disparo recusa chamadas sem o segredo e responde com o segredo;
   - o card aparece na configuração.
   - O envio real precisa do iPhone, porque o navegador embutido bloqueia notificações.
+- **Testado pelo usuário no iPhone**: depois de colocar as chaves no Render e criar o cron no cron-job.org, as notificações chegaram.
 
 ---
 
