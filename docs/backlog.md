@@ -20,10 +20,13 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
+- [x] **Etapa 6 — Primeiro deploy** (2026-11-25):
+  - app na Vercel (https://appde-habitos.vercel.app) com repasse de `/api` ao backend no Render (https://appdehabitos.onrender.com) e Postgres no Neon, tudo no plano gratuito;
+  - testado no iPhone pelo usuário: login, instalação na tela de início em tela cheia, sessão mantida ao fechar e reabrir, "Sair".
 
 ## Em andamento
 
-- **Etapa 6 — Primeiro deploy e teste no iPhone**: código preparado e enviado ao GitHub em 2026-11-25. Aguardando o usuário criar as contas no Neon, no Render e na Vercel (passo a passo em `docs/deploy.md`).
+- **Etapa 6 — Primeiro deploy e teste no iPhone**: no ar e testada no iPhone em 2026-11-25, aguardando aprovação do usuário.
 
 ## Próximas funcionalidades
 
@@ -36,7 +39,6 @@ Nenhum bug em aberto no momento.
 ## Melhorias técnicas (não bloqueantes, sem prioridade definida)
 
 - **Conferir `TRUST_PROXY_HOPS=2` em produção**: o limite de login deve contar por IP do aparelho, e não pelo IP da Vercel.
-- **Service worker não confirmado no navegador embutido do Claude**: o `sw.js` é gerado e servido corretamente (200, `application/javascript`, JavaScript válido), mas o navegador embutido recusa registrar service workers ("unknown error occurred when fetching the script"). Confirmar a instalação do PWA no iPhone na Etapa 6.
 - **`npm audit` do frontend**: 4 avisos moderados em `minimatch`, dependência de build do `vite-plugin-pwa`/workbox. Afeta só o build, não o app no celular. A correção sugerida (`--force`) rebaixaria o plugin para a 1.x. Rever quando sair versão nova.
 - **Paleta e ícone provisórios** (azul-petróleo com gota d'água): definir com o usuário.
 

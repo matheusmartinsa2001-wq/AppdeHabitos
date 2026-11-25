@@ -15,7 +15,7 @@ O desenvolvimento segue um fluxo de etapas: uma etapa por vez, com aprovação e
 - ✔ Etapa 3 — Modelagem do banco de dados (`docs/banco.md`), aprovada em 2026-11-25
 - ✔ Etapa 4 — Estrutura inicial do código (backend, frontend com manifest e service worker, Docker para dev, testes), aprovada em 2026-11-25
 - ✔ Etapa 5 — Login com senha (conta única criada no boot a partir de `ADMIN_PASSWORD`), aprovada em 2026-11-25
-- ✱ Etapa 6 — Primeiro deploy nos planos gratuitos e teste de instalação no iPhone (antes das funcionalidades, para validar cedo CORS/cookie no Safari e a instalação do PWA)
+- ✱ Etapa 6 — Primeiro deploy nos planos gratuitos e teste de instalação no iPhone. No ar em 2026-11-25 (https://appde-habitos.vercel.app), testado no iPhone pelo usuário; aguardando aprovação.
 
 ## Fase 2 — Módulo Água (primeiro módulo, pedido em 2026-11-25)
 

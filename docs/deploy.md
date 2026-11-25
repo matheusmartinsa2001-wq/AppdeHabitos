@@ -2,7 +2,10 @@
 
 Decisões em `docs/decisoes.md`: o app é um PWA ("App será um PWA"), usado no iPhone pelo Safari → "Adicionar à Tela de Início", e fica hospedado em planos gratuitos. Os provedores e o repasse de `/api` foram definidos na Etapa 6. **Regra do projeto: nada pago, nem como sugestão.**
 
-Repositório: https://github.com/matheusmartinsa2001-wq/AppdeHabitos (privado, branch `main`). Os provedores publicam a partir dele a cada push.
+Endereços:
+- **App**: https://appde-habitos.vercel.app
+- **API**: https://appdehabitos.onrender.com/api (o app usa pelo repasse `/api` da Vercel)
+- **Repositório**: https://github.com/matheusmartinsa2001-wq/AppdeHabitos (privado, branch `main`). Os provedores publicam a partir dele a cada push.
 
 ## Onde cada peça roda
 

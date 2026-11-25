@@ -12,6 +12,28 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 6: app no ar e testado no iPhone
+
+**Tipo**: Infra
+
+- No ar, tudo no plano gratuito:
+  - app: https://appde-habitos.vercel.app (Vercel);
+  - backend: https://appdehabitos.onrender.com (Render, Docker);
+  - banco: Postgres no Neon.
+- Conferido daqui:
+  - o health passa pela Vercel até o banco;
+  - senha errada é recusada;
+  - o Swagger fica fechado em produção;
+  - o manifest e o service worker são servidos.
+- **Testado pelo usuário no iPhone**, tudo como esperado:
+  - login pelo Safari;
+  - "Adicionar à Tela de Início" abre o app em tela cheia;
+  - a sessão continua depois de fechar e reabrir o app, o que confirma o cookie com o repasse de `/api`;
+  - "Sair" funciona.
+- Mensagem de erro das variáveis de ambiente mais clara: mostra o nome da variável e a regra, nunca o valor.
+
+---
+
 ## 2026-11-25 — Etapa 6: preparo do deploy
 
 **Tipo**: Infra + backend
