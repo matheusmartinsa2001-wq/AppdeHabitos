@@ -1,0 +1,65 @@
+# Ambiente de DESENVOLVIMENTO local. Em produção cada peça roda num provedor gratuito
+# (ver docs/deploy.md). Portas diferentes das do Vivo Team Management (5432/3000/5173)
+# para os dois projetos poderem rodar ao mesmo tempo.
+name: app-de-habitos
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: habitos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: habitos
+      POSTGRES_PASSWORD: habitos_dev_password
+      POSTGRES_DB: app_de_habitos
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U habitos -d app_de_habitos']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - habitos-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: habitos-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://habitos:habitos_dev_password@postgres:5432/app_de_habitos?schema=public
+    ports:
+      - '3001:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - habitos-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:3001/api
+    container_name: habitos-frontend
+    restart: unless-stopped
+    ports:
+      - '5174:80'
+    depends_on:
+      - backend
+    networks:
+      - habitos-network
+
+volumes:
+  postgres_data:
+
+networks:
+  habitos-network:
+    driver: bridge

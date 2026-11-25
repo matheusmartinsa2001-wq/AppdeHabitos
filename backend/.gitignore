@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+
+# Variáveis de ambiente (contêm segredos) — nunca versionar
+.env
+.env.*.local

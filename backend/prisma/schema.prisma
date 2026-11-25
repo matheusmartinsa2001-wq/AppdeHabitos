@@ -1,0 +1,119 @@
+// Prisma schema — App de Hábitos
+// Modelo aprovado na Etapa 3. Ver docs/banco.md (regras de integridade) e docs/decisoes.md.
+// Regras que o Prisma não expressa (CHECK, índices únicos parciais) estão em SQL bruto na migration.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== ENUMS ====================
+
+enum WaterIntakeSource {
+  REMINDER // confirmou um lembrete
+  MANUAL // registro livre
+}
+
+// ==================== ACESSO ====================
+
+/// Conta única do app. Criada pelo seed (Etapa 5) com o hash da senha vinda de variável de ambiente.
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  passwordHash String
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  refreshTokens     RefreshToken[]
+  pushSubscriptions PushSubscription[]
+
+  @@map("users")
+}
+
+/// Guarda só o hash do refresh token (nunca o valor). Rotação a cada uso.
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+/// Um aparelho/navegador inscrito para receber notificações (Web Push).
+model PushSubscription {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+// ==================== MÓDULO ÁGUA ====================
+
+/// Histórico da meta diária. A meta do dia D é a da linha com o maior effectiveFrom <= D.
+model WaterGoalChange {
+  id            String   @id @default(uuid()) @db.Uuid
+  /// Dia (Brasília) a partir do qual a meta vale.
+  effectiveFrom DateTime @unique @db.Date
+  goalMl        Int
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("water_goal_changes")
+}
+
+/// Lembrete diário (igual todos os dias). Exclusão lógica via deletedAt.
+model WaterReminder {
+  id          String    @id @default(uuid()) @db.Uuid
+  /// Minuto do dia em Brasília (0..1439). Ex.: 08:30 = 510.
+  minuteOfDay Int
+  amountMl    Int
+  deletedAt   DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  intakes    WaterIntake[]
+  dispatches WaterReminderDispatch[]
+
+  @@map("water_reminders")
+}
+
+/// Cada registro do que foi bebido. A quantidade fica gravada no próprio registro.
+model WaterIntake {
+  id         String            @id @default(uuid()) @db.Uuid
+  /// Dia (Brasília) do registro.
+  day        DateTime          @db.Date
+  amountMl   Int
+  source     WaterIntakeSource
+  reminderId String?           @db.Uuid
+  createdAt  DateTime          @default(now()) @db.Timestamptz(3)
+
+  reminder WaterReminder? @relation(fields: [reminderId], references: [id], onDelete: Restrict)
+
+  @@index([day])
+  @@map("water_intakes")
+}
+
+/// Marca que a notificação de um lembrete já foi enviada num dia (uma só por lembrete por dia).
+model WaterReminderDispatch {
+  id         String   @id @default(uuid()) @db.Uuid
+  reminderId String   @db.Uuid
+  day        DateTime @db.Date
+  sentAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  reminder WaterReminder @relation(fields: [reminderId], references: [id], onDelete: Restrict)
+
+  @@unique([reminderId, day])
+  @@map("water_reminder_dispatches")
+}

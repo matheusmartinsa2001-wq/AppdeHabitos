@@ -1,0 +1,18 @@
+# Dependências e builds
+node_modules/
+dist/
+coverage/
+
+# Variáveis de ambiente e segredos — nunca versionar
+.env
+.env.*
+!.env.example
+!.env.*.example
+# Sem segredos: só diz ao build de produção do app para chamar a API em /api.
+!frontend/.env.production
+
+# Backups locais do banco (podem conter dados reais)
+backups/
+
+# Configuração local do Claude Code
+.claude/settings.local.json
