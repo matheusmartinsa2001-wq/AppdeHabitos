@@ -12,6 +12,18 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 6: preparo do deploy
+
+**Tipo**: Infra + backend
+
+- `frontend/vercel.json`: a Vercel repassa `/api/*` ao backend no Render e serve o app como SPA. `sw.js` e `index.html` vão sem cache.
+- `frontend/.env.production`: o build de produção chama a API em `/api`.
+- Cookie de sessão `SameSite=Lax` (com `Secure` em produção), já que app e API ficam no mesmo site.
+- Repositório git criado e enviado ao GitHub privado do usuário. `.gitattributes` com fim de linha LF.
+- `docs/deploy.md` com o passo a passo para Neon, Render, Vercel e o teste no iPhone.
+
+---
+
 ## 2026-11-25 — Etapa 5 aprovada
 
 **Tipo**: Documentação

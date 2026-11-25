@@ -23,7 +23,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 6 — Primeiro deploy e teste no iPhone**: plano proposto ao usuário em 2026-11-25, aguardando decisões (proxy de `/api` e repositório no GitHub).
+- **Etapa 6 — Primeiro deploy e teste no iPhone**: código preparado e enviado ao GitHub em 2026-11-25. Aguardando o usuário criar as contas no Neon, no Render e na Vercel (passo a passo em `docs/deploy.md`).
 
 ## Próximas funcionalidades
 
@@ -35,6 +35,7 @@ Nenhum bug em aberto no momento.
 
 ## Melhorias técnicas (não bloqueantes, sem prioridade definida)
 
+- **Conferir `TRUST_PROXY_HOPS=2` em produção**: o limite de login deve contar por IP do aparelho, e não pelo IP da Vercel.
 - **Service worker não confirmado no navegador embutido do Claude**: o `sw.js` é gerado e servido corretamente (200, `application/javascript`, JavaScript válido), mas o navegador embutido recusa registrar service workers ("unknown error occurred when fetching the script"). Confirmar a instalação do PWA no iPhone na Etapa 6.
 - **`npm audit` do frontend**: 4 avisos moderados em `minimatch`, dependência de build do `vite-plugin-pwa`/workbox. Afeta só o build, não o app no celular. A correção sugerida (`--force`) rebaixaria o plugin para a 1.x. Rever quando sair versão nova.
 - **Paleta e ícone provisórios** (azul-petróleo com gota d'água): definir com o usuário.

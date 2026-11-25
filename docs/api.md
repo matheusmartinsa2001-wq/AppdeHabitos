@@ -28,7 +28,7 @@ Atualizar este documento sempre que um endpoint for criado, alterado ou removido
 | POST | `/auth/refresh` | Público (cookie) | Renova a sessão (rotação do refresh token) |
 | POST | `/auth/logout` | Público (cookie) | Encerra a sessão atual |
 
-O refresh token vai **só** no cookie `refreshToken` (`httpOnly`, `path=/api/auth`; `SameSite=None; Secure` em produção, `Lax` em desenvolvimento), nunca no corpo.
+O refresh token vai **só** no cookie `refreshToken` (`httpOnly`, `path=/api/auth`, `SameSite=Lax`; `Secure` em produção), nunca no corpo.
 
 ### `POST /auth/login`
 

@@ -25,7 +25,7 @@ flowchart LR
 - **Backend**: API NestJS, prefixo global `/api`, Swagger em `/api/docs` (só fora de produção).
 - **Banco**: Postgres gerenciado em produção. Localmente roda no container do Docker. As migrations são gerenciadas pelo Prisma (`backend/prisma/migrations/`).
 - **Desenvolvimento local**: `docker-compose.yml` na raiz (serviços `postgres`, `backend`, `frontend`). No host, as portas são **5433** (Postgres), **3001** (API) e **5174** (app), diferentes das do Vivo Team Management, para os dois rodarem juntos.
-- **Produção**: frontend e backend ficam em origens diferentes. CORS, cookie e backend que "dorme" estão em `docs/deploy.md`.
+- **Produção**: a Vercel serve o app e repassa `/api` ao backend no Render (`frontend/vercel.json`), então, para o navegador, app e API são o mesmo site. Detalhes em `docs/deploy.md`.
 - **Offline**: `[A DEFINIR]`. Em aberto o que o app faz sem internet: só abrir a casca, mostrar dados em cache ou deixar marcar hábitos para sincronizar depois.
 
 ## Organização de pastas (alvo)

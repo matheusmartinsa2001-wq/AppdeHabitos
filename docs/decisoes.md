@@ -167,12 +167,30 @@ O provedor exato de cada peça é escolhido na Etapa 6 (primeiro deploy).
 - **Conta criada no boot, não por seed**: o `AccountBootstrapService` sincroniza a conta com `ADMIN_PASSWORD` toda vez que o backend sobe. Ele cria a conta se ela não existir. Se a senha mudou, atualiza o hash e encerra as sessões. Sem a variável, não mexe em nada. Motivo: o Render/Koyeb gratuitos não dão terminal para rodar um seed. Trocar a senha é mudar a variável no painel e reiniciar.
 - **Refresh token opaco** (32 bytes aleatórios), e não JWT como no Vivo. O banco guarda o SHA-256 (`tokenHash` único). A cada uso, o token é trocado. Reapresentar um token já trocado (fora de uma janela de 10 s para renovações simultâneas) encerra todas as sessões, porque pode ser um token vazado.
 - **Duração** (confirmada pelo usuário): access token de 15 min, só em memória. A sessão dura 30 dias a partir do último uso, porque cada renovação estende o prazo. Ou seja, quem usa o app pelo menos uma vez por mês não precisa digitar a senha de novo.
-- **Cookie**: `httpOnly`, `path=/api/auth`. Em produção usa `SameSite=None; Secure`, porque app e API ficam em domínios diferentes. Em desenvolvimento usa `SameSite=Lax` (localhost:5174 e :3001 são o mesmo "site", sem HTTPS). Isso ainda precisa ser testado no Safari do iPhone na Etapa 6.
+- **Cookie**: `httpOnly`, `path=/api/auth`. Em produção usa `SameSite=None; Secure`, porque app e API ficam em domínios diferentes. Em desenvolvimento usa `SameSite=Lax` (localhost:5174 e :3001 são o mesmo "site", sem HTTPS). **Substituído na Etapa 6**: o cookie passou a ser `SameSite=Lax` com o repasse de `/api` pela Vercel.
 - **Limite de login**: 5 tentativas por minuto por IP. Como a conta é única, não há limite por conta.
 - **Mesma mensagem** ("Senha incorreta") com ou sem conta configurada.
 - **No app**, "sem conexão" (servidor fora do ar ou acordando) é um estado diferente de "sem sessão": falha de rede não manda para o login.
 
 **Impacto**: novas variáveis `JWT_ACCESS_SECRET` (mínimo 32 caracteres), `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`, `BCRYPT_SALT_ROUNDS` e `ADMIN_PASSWORD` (ver `backend/.env.example` e `docs/deploy.md`).
+
+---
+
+## 2026-11-25 — Etapa 6: Vercel repassa /api ao Render; repositório no GitHub
+
+**Contexto**: o Safari do iPhone bloqueia cookies de outro site (proteção contra rastreamento). Com o app em `*.vercel.app` e a API em `*.onrender.com`, o cookie de sessão (`SameSite=None`) seria descartado, e a senha seria pedida a cada abertura do app.
+
+**Decisão** (aprovada pelo usuário):
+- **Vercel repassa `/api/*` ao backend no Render** (`frontend/vercel.json`, rewrite). O app chama `/api` no próprio endereço (`frontend/.env.production`), então, para o navegador, tudo é um site só.
+- O cookie de sessão passa a ser **`SameSite=Lax`** em todos os ambientes, com `Secure` em produção. Isso substitui o `SameSite=None` da Etapa 5.
+- **Provedores fixados**: Vercel (app), Render (backend, Docker, região Virginia) e Neon (Postgres, AWS US East). A Cloudflare Pages ficou de fora porque não faz o repasse para um endereço externo de forma simples no plano gratuito.
+- **`TRUST_PROXY_HOPS=2`** em produção (Vercel + proxy do Render). Ainda falta conferir que o limite de login conta por IP do aparelho.
+- **Repositório privado** no GitHub do usuário (`matheusmartinsa2001-wq/AppdeHabitos`), branch `main`. Cada push publica no Render e na Vercel.
+- `.gitattributes` com `eol=lf`, para o Docker e os provedores (Linux) receberem os arquivos com fim de linha Unix.
+
+**Impacto**:
+- Passo a passo em `docs/deploy.md`.
+- `FRONTEND_URL` continua configurada (CORS), mas no uso normal o navegador nem faz requisição de outra origem.
 
 ---
 
