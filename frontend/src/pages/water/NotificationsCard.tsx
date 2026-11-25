@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast'
 import * as push from '@/lib/push'
 import * as pushService from '@/services/pushService'
 import { extractErrorMessage } from '@/utils/errors'
@@ -13,15 +13,26 @@ type State =
   | { kind: 'off'; publicKey: string }
   | { kind: 'on' }
 
-/** Ativar/desativar as notificações dos lembretes neste aparelho, com envio de teste. */
+const STATUS: Record<State['kind'], string> = {
+  loading: 'Verificando…',
+  'server-off': 'Ainda não configuradas no servidor',
+  'ios-needs-install': 'No iPhone, instale o app: Compartilhar → Adicionar à Tela de Início',
+  unsupported: 'Este navegador não recebe notificações',
+  denied: 'Bloqueadas. Libere em Ajustes → Notificações → Hábitos',
+  off: 'Desativadas neste aparelho',
+  on: 'Ativadas neste aparelho',
+}
+
+/** Notificações dos lembretes numa chave, com "Enviar teste" (design "Módulo Água"). */
 export function NotificationsCard() {
+  const { showToast } = useToast()
   // Sem suporte no navegador já se sabe na hora; com suporte, falta perguntar ao servidor.
   const [state, setState] = useState<State>(() => {
     const support = push.getPushSupport()
     return support === 'supported' ? { kind: 'loading' } : { kind: support }
   })
-  const [busy, setBusy] = useState<'enable' | 'disable' | 'test' | null>(null)
-  const [message, setMessage] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [testing, setTesting] = useState(false)
 
   // Sem `async` aqui: o estado só muda quando as promessas resolvem (lint set-state-in-effect).
   const load = useCallback(
@@ -46,103 +57,91 @@ export function NotificationsCard() {
     if (push.getPushSupport() === 'supported') void load()
   }, [load])
 
-  const enable = async (publicKey: string) => {
-    setBusy('enable')
-    setMessage(null)
-    try {
-      const subscription = await push.subscribeToPush(publicKey)
-      if (!subscription) {
-        setState({ kind: 'denied' })
-        return
-      }
-      await pushService.savePushSubscription(subscription)
-      setState({ kind: 'on' })
-      setMessage({ tone: 'ok', text: 'Notificações ativadas neste aparelho.' })
-    } catch (error) {
-      setMessage({ tone: 'error', text: extractErrorMessage(error, 'Não foi possível ativar as notificações.') })
-    } finally {
-      setBusy(null)
-    }
-  }
+  const on = state.kind === 'on'
+  const canToggle = state.kind === 'on' || state.kind === 'off'
 
-  const disable = async () => {
-    setBusy('disable')
-    setMessage(null)
+  const toggle = async () => {
+    if (!canToggle || busy) return
+    setBusy(true)
     try {
-      const endpoint = await push.unsubscribeFromPush()
-      if (endpoint) await pushService.removePushSubscription(endpoint)
-      await load()
+      if (state.kind === 'off') {
+        // Pedido de permissão dentro do toque (exigência do iPhone).
+        const subscription = await push.subscribeToPush(state.publicKey)
+        if (!subscription) {
+          setState({ kind: 'denied' })
+          return
+        }
+        await pushService.savePushSubscription(subscription)
+        setState({ kind: 'on' })
+      } else {
+        const endpoint = await push.unsubscribeFromPush()
+        if (endpoint) await pushService.removePushSubscription(endpoint)
+        await load()
+      }
     } catch (error) {
-      setMessage({ tone: 'error', text: extractErrorMessage(error) })
+      showToast(extractErrorMessage(error, 'Não foi possível mudar as notificações.'))
     } finally {
-      setBusy(null)
+      setBusy(false)
     }
   }
 
   const test = async () => {
-    setBusy('test')
-    setMessage(null)
+    setTesting(true)
     try {
       const { sent } = await pushService.sendTestPush()
-      setMessage(
-        sent > 0
-          ? { tone: 'ok', text: 'Notificação de teste enviada. Ela deve chegar em alguns segundos.' }
-          : { tone: 'error', text: 'Nenhum aparelho recebeu. Desative e ative de novo.' },
-      )
+      showToast(sent > 0 ? 'Teste enviado: deve chegar em segundos' : 'Nenhum aparelho recebeu. Desligue e ligue a chave.')
     } catch (error) {
-      setMessage({ tone: 'error', text: extractErrorMessage(error) })
+      showToast(extractErrorMessage(error))
     } finally {
-      setBusy(null)
+      setTesting(false)
     }
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card p-4" aria-live="polite">
-      <h2 className="font-semibold">Notificações dos lembretes</h2>
-      <div className="mt-2 text-sm">
-        {state.kind === 'loading' && <p className="text-muted-foreground">Verificando…</p>}
-        {state.kind === 'server-off' && (
-          <p className="text-muted-foreground">As notificações ainda não estão configuradas no servidor.</p>
-        )}
-        {state.kind === 'ios-needs-install' && (
-          <p className="text-muted-foreground">
-            No iPhone, as notificações só funcionam com o app instalado: no Safari, toque em Compartilhar →{' '}
-            <strong>Adicionar à Tela de Início</strong> e abra o app pelo ícone.
-          </p>
-        )}
-        {state.kind === 'unsupported' && (
-          <p className="text-muted-foreground">Este navegador não recebe notificações.</p>
-        )}
-        {state.kind === 'denied' && (
-          <p className="text-muted-foreground">
-            As notificações estão bloqueadas. No iPhone, libere em <strong>Ajustes → Notificações → Hábitos</strong>.
-          </p>
-        )}
-        {state.kind === 'off' && (
-          <div className="flex flex-col gap-2">
-            <p className="text-muted-foreground">Receba um aviso no horário de cada lembrete.</p>
-            <Button loading={busy === 'enable'} onClick={() => void enable(state.publicKey)}>
-              Ativar notificações
-            </Button>
+    <section className="flex flex-col gap-2.5">
+      <h2 className="px-1 text-xl font-black">Notificações</h2>
+      <div className="flex flex-col rounded-3xl bg-card px-[18px] py-1">
+        <div
+          role="switch"
+          aria-checked={on}
+          aria-disabled={!canToggle || busy}
+          aria-label="Avisar no horário dos lembretes"
+          tabIndex={0}
+          onClick={() => void toggle()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              void toggle()
+            }
+          }}
+          className="flex min-h-[68px] items-center justify-between gap-3 outline-none"
+        >
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[17px] font-extrabold">Avisar no horário dos lembretes</span>
+            <span className={`text-[13px] font-bold ${on ? 'text-success' : 'text-muted-foreground'}`}>{STATUS[state.kind]}</span>
+          </span>
+          <span
+            aria-hidden
+            className={`relative h-[34px] w-14 flex-none rounded-full transition-colors duration-200 ${on ? 'bg-primary' : 'bg-today-fill'} ${canToggle ? '' : 'opacity-50'}`}
+          >
+            <span
+              className="absolute top-[3px] left-[3px] size-7 rounded-full bg-card shadow-[0_2px_6px_rgba(15,42,51,.25)] transition-transform duration-300 ease-[cubic-bezier(.3,1.4,.5,1)]"
+              style={{ transform: on ? 'translateX(22px)' : 'translateX(0px)' }}
+            />
+          </span>
+        </div>
+        {on && (
+          <div className="flex items-center justify-between gap-3 border-t border-line pt-3 pb-3.5">
+            <span className="text-sm leading-snug font-bold text-muted-foreground">Confira se chegam neste aparelho.</span>
+            <button
+              type="button"
+              disabled={testing}
+              onClick={() => void test()}
+              className="h-11 flex-none rounded-[14px] border-[1.5px] border-border bg-card px-4 text-[15px] font-extrabold"
+            >
+              {testing ? 'Enviando…' : 'Enviar teste'}
+            </button>
           </div>
-        )}
-        {state.kind === 'on' && (
-          <div className="flex flex-col gap-2">
-            <p className="font-medium text-success">✓ Ativadas neste aparelho</p>
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" loading={busy === 'test'} disabled={busy !== null} onClick={() => void test()}>
-                Enviar teste
-              </Button>
-              <Button variant="ghost" loading={busy === 'disable'} disabled={busy !== null} onClick={() => void disable()}>
-                Desativar
-              </Button>
-            </div>
-          </div>
-        )}
-        {message && (
-          <p role={message.tone === 'error' ? 'alert' : 'status'} className={`mt-2 ${message.tone === 'error' ? 'text-destructive' : 'text-success'}`}>
-            {message.text}
-          </p>
         )}
       </div>
     </section>

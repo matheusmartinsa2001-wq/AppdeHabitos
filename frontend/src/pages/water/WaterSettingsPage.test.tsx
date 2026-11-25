@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { AxiosError, AxiosHeaders } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { useAuth } from '@/contexts/AuthContext'
 import * as waterService from '@/services/waterService'
 import { renderWithProviders } from '@/test/render'
 import type { WaterSettings } from '@/types/water'
@@ -13,8 +14,12 @@ vi.mock('@/services/waterService', () => ({
   updateWaterReminder: vi.fn(),
   deleteWaterReminder: vi.fn(),
 }))
+vi.mock('@/contexts/AuthContext', () => ({ useAuth: vi.fn() }))
+// O card de notificações tem testes próprios.
+vi.mock('./NotificationsCard', () => ({ NotificationsCard: () => <p>notificações</p> }))
 
 const service = vi.mocked(waterService)
+const logout = vi.fn()
 
 const EMPTY: WaterSettings = {
   goalMl: null,
@@ -45,28 +50,43 @@ function conflict(message: string) {
   })
 }
 
-describe('WaterSettingsPage', () => {
+describe('WaterSettingsPage (Ajustes)', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(useAuth).mockReturnValue({
+      status: 'authenticated',
+      sessionExpired: false,
+      login: vi.fn(),
+      logout,
+      retry: vi.fn(),
+    })
     vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
-  it('sem meta: o campo já vem com a sugestão de 4.000 mL, mas nada é salvo sozinho', async () => {
+  it('sem meta: sugestão de 4.000 mL, "Salvar meta" visível e nada salvo sozinho', async () => {
     service.getWaterSettings.mockResolvedValue(EMPTY)
     renderWithProviders(<WaterSettingsPage />)
-    expect(await screen.findByLabelText('Meta diária em mL')).toHaveValue('4000')
-    expect(screen.getByText('Você ainda não tem uma meta. Confira o valor e salve.')).toBeInTheDocument()
-    expect(screen.getByText('Salve a meta diária para comparar com os lembretes.')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Meta diária em mL')).toHaveValue('4.000')
+    expect(screen.getByText('Sugestão inicial. Nada é gravado até você salvar.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Salvar meta' })).toBeInTheDocument()
     expect(service.setWaterGoal).not.toHaveBeenCalled()
   })
 
-  it('salva a meta e mostra a confirmação', async () => {
-    service.getWaterSettings.mockResolvedValue(EMPTY)
-    service.setWaterGoal.mockResolvedValue({ ...EMPTY, goalMl: 4000, remindersShortfallMl: 4000 })
+  it('com meta: − / + de 250 mL; "Salvar meta" só aparece quando muda; Cancelar volta', async () => {
+    service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
+    service.setWaterGoal.mockResolvedValue({ ...WITH_REMINDERS, goalMl: 3250 })
     const { user } = renderWithProviders(<WaterSettingsPage />)
-    await user.click(await screen.findByRole('button', { name: 'Salvar' }))
-    await waitFor(() => expect(service.setWaterGoal).toHaveBeenCalledWith(4000))
-    expect(await screen.findByText('Meta salva.')).toBeInTheDocument()
+    expect(await screen.findByLabelText('Meta diária em mL')).toHaveValue('3.000')
+    expect(screen.queryByRole('button', { name: 'Salvar meta' })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Aumentar 250 mL' }))
+    expect(screen.getByLabelText('Meta diária em mL')).toHaveValue('3.250')
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+    expect(screen.getByLabelText('Meta diária em mL')).toHaveValue('3.000')
+
+    await user.click(screen.getByRole('button', { name: 'Aumentar 250 mL' }))
+    await user.click(screen.getByRole('button', { name: 'Salvar meta' }))
+    await waitFor(() => expect(service.setWaterGoal).toHaveBeenCalledWith(3250))
   })
 
   it('meta fora dos limites não vai ao servidor', async () => {
@@ -75,93 +95,99 @@ describe('WaterSettingsPage', () => {
     const input = await screen.findByLabelText('Meta diária em mL')
     await user.clear(input)
     await user.type(input, '200')
-    await user.click(screen.getByRole('button', { name: 'Salvar' }))
-    expect(await screen.findByText('Use no mínimo 500 mL')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Salvar meta' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Use no mínimo 500 mL')
     expect(service.setWaterGoal).not.toHaveBeenCalled()
   })
 
-  it('lembretes abaixo da meta: mostra a soma e o aviso de quanto falta', async () => {
+  it('soma dos lembretes × meta com o aviso de quanto falta', async () => {
     service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
     renderWithProviders(<WaterSettingsPage />)
-    expect(await screen.findByText('08:00')).toBeInTheDocument()
-    expect(screen.getByText('10:30')).toBeInTheDocument()
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Seguindo só os lembretes, você não bate a meta: faltam 500 mL.',
-    )
+    expect(await screen.findByText('Só com os lembretes, faltam 500 mL para a meta.')).toBeInTheDocument()
   })
 
-  it('lembretes que chegam à meta: sem aviso', async () => {
+  it('lembretes que chegam à meta', async () => {
     service.getWaterSettings.mockResolvedValue({ ...WITH_REMINDERS, remindersShortfallMl: 0 })
     renderWithProviders(<WaterSettingsPage />)
     expect(await screen.findByText('Seguindo os lembretes, você bate a meta.')).toBeInTheDocument()
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
-  it('adiciona um lembrete e recarrega a soma', async () => {
-    service.getWaterSettings.mockResolvedValueOnce(WITH_REMINDERS).mockResolvedValueOnce({
-      ...WITH_REMINDERS,
-      reminders: [...WITH_REMINDERS.reminders, { id: 'r3', time: '15:00', amountMl: 500 }],
-      remindersTotalMl: 3000,
-      remindersShortfallMl: 0,
-    })
+  it('"+ Adicionar lembrete" abre o painel; salva e recarrega', async () => {
+    service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
     service.createWaterReminder.mockResolvedValue({ id: 'r3', time: '15:00', amountMl: 500 })
     const { user } = renderWithProviders(<WaterSettingsPage />)
-
-    await user.type(await screen.findByLabelText('Horário'), '15:00')
-    await user.type(screen.getByLabelText('Quantidade em mL'), '500')
-    await user.click(screen.getByRole('button', { name: '+ Adicionar' }))
-
+    await user.click(await screen.findByRole('button', { name: '+ Adicionar lembrete' }))
+    const dialog = screen.getByRole('dialog', { name: 'Novo lembrete' })
+    await user.type(within(dialog).getByLabelText('Horário'), '15:00')
+    await user.type(within(dialog).getByLabelText('Quantidade em mL'), '500')
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
     await waitFor(() => expect(service.createWaterReminder).toHaveBeenCalledWith({ time: '15:00', amountMl: 500 }))
-    expect(await screen.findByText('15:00')).toBeInTheDocument()
-    expect(screen.getByText('Seguindo os lembretes, você bate a meta.')).toBeInTheDocument()
+    expect(await screen.findByText('Lembrete das 15:00 salvo')).toBeInTheDocument()
   })
 
-  it('horário repetido mostra a mensagem do servidor', async () => {
-    service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
-    service.createWaterReminder.mockImplementation(() => Promise.reject(conflict('Já existe um lembrete às 08:00')))
-    const { user } = renderWithProviders(<WaterSettingsPage />)
-
-    await user.type(await screen.findByLabelText('Horário'), '08:00')
-    await user.type(screen.getByLabelText('Quantidade em mL'), '300')
-    await user.click(screen.getByRole('button', { name: '+ Adicionar' }))
-
-    expect(await screen.findByText('Já existe um lembrete às 08:00')).toBeInTheDocument()
-  })
-
-  it('lembrete sem horário ou com mL fora dos limites não vai ao servidor', async () => {
+  it('painel recusa horário repetido e mL fora dos limites antes de ir ao servidor', async () => {
     service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
     const { user } = renderWithProviders(<WaterSettingsPage />)
-    await user.type(await screen.findByLabelText('Quantidade em mL'), '3000')
-    await user.click(screen.getByRole('button', { name: '+ Adicionar' }))
-    expect(await screen.findByText('Escolha o horário')).toBeInTheDocument()
-    expect(screen.getByText('Use no máximo 2.000 mL')).toBeInTheDocument()
+    await user.click(await screen.findByRole('button', { name: '+ Adicionar lembrete' }))
+    const dialog = screen.getByRole('dialog', { name: 'Novo lembrete' })
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent('Escolha o horário')
+
+    await user.type(within(dialog).getByLabelText('Horário'), '08:00')
+    await user.type(within(dialog).getByLabelText('Quantidade em mL'), '3000')
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent('Use no máximo 2.000 mL')
+
+    await user.clear(within(dialog).getByLabelText('Quantidade em mL'))
+    await user.type(within(dialog).getByLabelText('Quantidade em mL'), '300')
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent('Já existe um lembrete às 08:00.')
     expect(service.createWaterReminder).not.toHaveBeenCalled()
   })
 
-  it('edita os mL de um lembrete', async () => {
+  it('erro do servidor aparece no painel', async () => {
     service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
-    service.updateWaterReminder.mockResolvedValue({ id: 'r1', time: '08:00', amountMl: 700 })
+    service.createWaterReminder.mockImplementation(() => Promise.reject(conflict('Já existe um lembrete às 09:00')))
     const { user } = renderWithProviders(<WaterSettingsPage />)
-
-    await user.click(await screen.findByRole('button', { name: 'Editar 08:00 · 1.000 mL' }))
-    const amount = screen.getByDisplayValue('1000')
-    await user.clear(amount)
-    await user.type(amount, '700')
-    await user.click(screen.getAllByRole('button', { name: 'Salvar' }).at(-1)!)
-
-    await waitFor(() => expect(service.updateWaterReminder).toHaveBeenCalledWith('r1', { time: '08:00', amountMl: 700 }))
+    await user.click(await screen.findByRole('button', { name: '+ Adicionar lembrete' }))
+    const dialog = screen.getByRole('dialog', { name: 'Novo lembrete' })
+    await user.type(within(dialog).getByLabelText('Horário'), '09:00')
+    await user.type(within(dialog).getByLabelText('Quantidade em mL'), '300')
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('Já existe um lembrete às 09:00')
   })
 
-  it('excluir pede confirmação antes', async () => {
+  it('tocar num lembrete abre a edição; excluir pede confirmação', async () => {
     service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
+    service.updateWaterReminder.mockResolvedValue({ id: 'r1', time: '08:00', amountMl: 700 })
     service.deleteWaterReminder.mockResolvedValue(undefined)
     const { user } = renderWithProviders(<WaterSettingsPage />)
 
-    await user.click(await screen.findByRole('button', { name: 'Excluir 10:30 · 1.500 mL' }))
+    await user.click(await screen.findByRole('button', { name: 'Editar 08:00 · 1.000 mL' }))
+    const dialog = screen.getByRole('dialog', { name: 'Editar lembrete' })
+    const amount = within(dialog).getByLabelText('Quantidade em mL')
+    expect(amount).toHaveValue('1000')
+    await user.clear(amount)
+    await user.type(amount, '700')
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar lembrete' }))
+    await waitFor(() => expect(service.updateWaterReminder).toHaveBeenCalledWith('r1', { time: '08:00', amountMl: 700 }))
+
+    await user.click(screen.getByRole('button', { name: 'Editar 10:30 · 1.500 mL' }))
+    const editDialog = screen.getByRole('dialog', { name: 'Editar lembrete' })
+    await user.click(within(editDialog).getByRole('button', { name: 'Excluir lembrete' }))
     expect(service.deleteWaterReminder).not.toHaveBeenCalled()
-    const row = screen.getByText('Excluir?').closest('li')!
-    await user.click(within(row).getByRole('button', { name: 'Sim' }))
+    expect(within(editDialog).getByText('Excluir o lembrete das 10:30?')).toBeInTheDocument()
+    await user.click(within(editDialog).getByRole('button', { name: 'Excluir' }))
     await waitFor(() => expect(service.deleteWaterReminder).toHaveBeenCalledWith('r2'))
+    expect(await screen.findByText('Lembrete das 10:30 excluído')).toBeInTheDocument()
+  })
+
+  it('"Sair deste aparelho" encerra a sessão', async () => {
+    service.getWaterSettings.mockResolvedValue(WITH_REMINDERS)
+    logout.mockResolvedValue(undefined)
+    const { user } = renderWithProviders(<WaterSettingsPage />)
+    await user.click(await screen.findByRole('button', { name: 'Sair deste aparelho' }))
+    expect(logout).toHaveBeenCalled()
   })
 
   it('falha ao carregar mostra "Tentar novamente"', async () => {

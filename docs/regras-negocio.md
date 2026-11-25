@@ -77,6 +77,19 @@ Regras de edição:
 - Dia sem nenhum registro conta como **não batido**.
 - Dá para navegar pelos meses, do mês da primeira meta até o mês atual. Tocar num dia mostra o total e a meta daquele dia.
 
+### Telas (redesign de 2026-11-25)
+
+- A navegação é uma barra inferior com Hoje · Histórico · Ajustes. "Sair deste aparelho" fica em Ajustes.
+- **Hoje**:
+  - o "Tomei" do **lembrete da vez** fica em destaque, logo abaixo do progresso. O lembrete da vez é o último pendente que já passou do horário ou, se nenhum passou, o próximo;
+  - lembretes e registros aparecem numa linha só ("Seu dia"), com a marca de "agora";
+  - logo depois de registrar, aparece um aviso com **Desfazer**. Depois, desfazer é tocando no item da linha.
+- **Histórico**: cada dia do calendário mostra quanto da meta foi bebido (altura do preenchimento), além do verde/vermelho. O card da sequência diz se já conta hoje.
+- **Ajustes**:
+  - a meta tem botões − / + de 250 mL e "Salvar meta" só aparece quando o valor muda;
+  - criar e editar lembrete abrem um painel, e excluir pede confirmação;
+  - as notificações ficam numa chave, com "Enviar teste".
+
 ## Outros hábitos
 
 `[A DEFINIR]`: em conversas futuras, um módulo por vez.

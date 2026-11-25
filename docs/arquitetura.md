@@ -104,6 +104,11 @@ Igual ao Vivo, com a conta única e só senha:
 | `pages/auth/LoginPage` | Tela de senha |
 | `sw.ts` | Service worker próprio (`injectManifest`): precache, `push` → notificação, toque → abre o app |
 | `lib/push.ts` / `services/pushService.ts` / `pages/water/NotificationsCard` | Suporte do navegador (iPhone só com o app instalado), permissão, inscrição e cancelamento; card na configuração com "Ativar notificações", "Enviar teste" e "Desativar" |
+| `components/layout/AppShell` | Barra inferior Hoje · Histórico · Ajustes (destaque deslizante) em volta das telas logadas |
+| `components/ui/toast` | Aviso escuro acima da barra, com "Desfazer" opcional (`useToast`) |
+| `pages/water/todayModel.ts` | Funções puras: lembrete da vez (`nextReminder`) e linha "Seu dia" (`buildTimeline`) |
+| `pages/water/WaterTank` | Água animada do tanque (ondas, bolhas, "+X mL", comemoração da meta) |
+| `pages/water/GoalCard` / `ReminderSheet` / `NotificationsCard` | Meta com −/+ 250 mL; painel de criar/editar/excluir lembrete; chave de notificações com "Enviar teste" |
 | `pages/water/WaterHistoryPage` | `/agua/historico?mes=AAAA-MM`: sequência, % do mês, calendário verde/vermelho (domingo primeiro), navegação entre meses, detalhe do dia. Mês na URL via `hooks/useUrlParam` |
 | `pages/water/WaterTodayPage` | Tela inicial (`/`): Água do dia, com `WaterProgress` (total × meta) e `FreeIntakeForm` (+200/+300/+500 e outro valor), "Tomei", registros de hoje com "Desfazer", "Configurar" e "Sair". Recarrega ao voltar para o app (`visibilitychange`) |
 | `pages/water/` | `WaterSettingsPage` (`/agua/configuracao`), `GoalForm`, `ReminderForm` (adicionar/editar), `ReminderItem` (editar, excluir com confirmação), `RemindersSummary` (soma × meta e aviso), `waterRules.ts` (limites e esquemas zod iguais aos do backend) |

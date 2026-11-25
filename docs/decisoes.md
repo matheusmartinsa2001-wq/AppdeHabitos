@@ -214,6 +214,21 @@ O provedor exato de cada peça é escolhido na Etapa 6 (primeiro deploy).
 
 ---
 
+## 2026-11-25 — Redesign do módulo Água a partir do Claude Design
+
+**Contexto**: o usuário fez no Claude Design o protótipo "Módulo Água · UX + visual novo" (Hoje, Histórico, Ajustes) e pediu para implementá-lo. O conector do Claude Design não estava disponível na sessão, então o design chegou como o zip de handoff exportado pelo próprio usuário.
+
+**Decisão**:
+- O visual do protótipo vira o **visual oficial** do app: Nunito, azul-petróleo #0E7490, tema claro, tokens em `src/index.css`. A paleta, até então provisória, foi substituída.
+- **Só frontend**: as regras e a API não mudaram. Tudo usa os endpoints existentes.
+- Navegação por **barra inferior** (`AppShell`) no lugar de links soltos e "‹ voltar". As rotas continuam as mesmas (`/`, `/agua/historico`, `/agua/configuracao`).
+- As duas "Sugestões" que o próprio design marca como fora das regras (recorde de sequência e lembrete sugerido para completar a meta) **ficaram de fora**. Ficam registradas no backlog e só entram se o usuário pedir.
+- A fonte é embutida no build (`@fontsource/nunito`), e não carregada do Google Fonts: o PWA abre igual sem internet e não depende de serviço externo.
+
+**Impacto**: padrões de tela novos em `docs/padroes.md` → "Visual". Os componentes antigos de formulário (`GoalForm`, `ReminderForm`, `ReminderItem`, `RemindersSummary`, `FreeIntakeForm`, `WaterProgress`) foram substituídos por `GoalCard`, `ReminderSheet`, `WaterTank`, `todayModel` e pelas telas novas.
+
+---
+
 <!-- Modelo para novas decisões:
 
 ## AAAA-MM-DD — Título curto

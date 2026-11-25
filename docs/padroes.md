@@ -80,6 +80,16 @@ pages/<dominio>/
 - Um arquivo de serviço por domínio em `services/<dominio>Service.ts`; a página nunca chama `api.get(...)` direto.
 - Tipos em `types/<dominio>.ts`, espelhando exatamente a resposta do backend.
 
+### Visual (oficial desde o redesign do módulo Água, 2026-11-25)
+
+- Calmo e minimalista, tema claro, fonte **Nunito** (`@fontsource/nunito`, embutida no build: abre sem internet), azul-petróleo **#0E7490**.
+- Cores só pelas variáveis de `src/index.css` (`bg-primary`, `text-ink-2`, `bg-met`, `bg-warning-soft`...). O design de referência é o "Módulo Água · UX + visual novo" do Claude Design.
+- Telas logadas dentro do `AppShell` (barra inferior flutuante Hoje · Histórico · Ajustes). Título da tela: rótulo pequeno + h1 de 34px.
+- Cartões brancos com cantos de 24px sobre o fundo `--background`, botões principais de 52–64px de altura e áreas de toque de pelo menos 44px.
+- Confirmação de ação: `useToast().showToast(texto, { onUndo })` (`components/ui/toast.tsx`), o aviso escuro acima da barra, com "Desfazer" quando dá para voltar atrás.
+- Formulário de criar/editar: painel que sobe de baixo (ex.: `ReminderSheet`). O formulário interno tem `key` por abertura, para começar limpo sem `setState` em efeito.
+- Animações respeitam "reduzir movimento" do sistema (`prefersReducedMotion`).
+
 ### Componentes UI (padrão shadcn)
 
 - Primitivos em `components/ui/`: `React.ComponentProps<'tag'>` estendido, `cn()` para classes, variantes com `class-variance-authority`.

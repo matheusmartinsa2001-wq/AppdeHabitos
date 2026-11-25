@@ -1,49 +1,138 @@
 @import 'tailwindcss';
 
 /*
- * Paleta PROVISÓRIA (azul-petróleo "água"), só para a estrutura inicial.
- * A paleta definitiva é [A DEFINIR] com o usuário — ver docs/padroes.md.
- * Componentes usam sempre as variáveis (bg-primary, text-muted-foreground...), nunca hex direto.
+ * Visual oficial do app (design "Módulo Água · UX + visual novo", Claude Design, 2026-11-25):
+ * calmo e minimalista, fonte Nunito, azul-petróleo #0E7490, tema claro.
+ * Componentes usam sempre estas variáveis (bg-primary, text-ink-2...), nunca hex direto.
+ * Ver docs/padroes.md → "Visual".
  */
 @theme inline {
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
-  --color-muted: var(--muted);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-ring: var(--primary-ring);
+  --color-ink-2: var(--ink-2);
   --color-muted-foreground: var(--muted-foreground);
-  --color-destructive: var(--destructive);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
   --color-border: var(--border);
-  --color-ring: var(--ring);
+  --color-line: var(--line);
+  --color-tank: var(--tank);
+  --color-wave-back: var(--wave-back);
+  --color-wave-front: var(--wave-front);
+  --color-wave-accent: var(--wave-accent);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning: var(--warning);
+  --color-warning-strong: var(--warning-strong);
+  --color-warning-stripe: var(--warning-stripe);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-border: var(--destructive-border);
+  --color-destructive-ink: var(--destructive-ink);
+  --color-met: var(--met);
+  --color-met-fill: var(--met-fill);
+  --color-met-ink: var(--met-ink);
+  --color-missed: var(--missed);
+  --color-missed-fill: var(--missed-fill);
+  --color-today: var(--today);
+  --color-today-fill: var(--today-fill);
+  --color-dashed: var(--dashed);
+  --color-next: var(--next);
+  --color-ring: var(--primary);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --animate-spin-slow: wave-spin 15s linear infinite;
 }
 
 :root {
-  --radius: 0.75rem;
-
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #f6fafb;
+  --foreground: #0f2a33;
   --card: #ffffff;
-  --card-foreground: #0f172a;
   --primary: #0e7490;
+  --primary-strong: #0b5568;
   --primary-foreground: #ffffff;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --destructive: #b91c1c;
+  --primary-soft: #e1f0f4;
+  --primary-ring: #cfe6ec;
+  --ink-2: #2f4a55;
+  --muted-foreground: #546b76;
+  --subtle: #9ab0b9;
+  --muted: #f2f6f8;
+  --border: #dce6ea;
+  --line: #edf2f4;
+  --tank: #eaf4f7;
+  --wave-back: #c4e4eb;
+  --wave-front: #a2d3df;
+  --wave-accent: #9dd0dc;
+  --warning-soft: #fdf1e3;
+  --warning: #7a3a06;
+  --warning-strong: #8a4208;
+  --warning-stripe: #f3c995;
   --success: #15803d;
-  --warning: #b45309;
-  --border: #e2e8f0;
-  --ring: #0e7490;
+  --destructive: #b91c1c;
+  --destructive-soft: #fbedea;
+  --destructive-border: #f2cbc5;
+  --destructive-ink: #5a1d14;
+  --met: #ddf2e5;
+  --met-fill: #86cfa0;
+  --met-ink: #0f3d24;
+  --missed: #fbe5e1;
+  --missed-fill: #f0a597;
+  --today: #edf1f3;
+  --today-fill: #d3dce0;
+  --dashed: #9cc6d1;
+  --next: #f1f8fa;
+}
+
+@keyframes wave-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes bubble-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--dx, 0px), var(--rise, -120px));
+    opacity: 0;
+  }
+}
+@keyframes pour-float {
+  0% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-64px);
+    opacity: 0;
+  }
+}
+@keyframes goal-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.6);
+    opacity: 0;
+  }
 }
 
 @layer base {
@@ -57,11 +146,13 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
     -webkit-tap-highlight-color: transparent;
   }
 
   button:not(:disabled),
-  [role='button']:not([aria-disabled='true']) {
+  [role='button']:not([aria-disabled='true']),
+  [role='switch'] {
     cursor: pointer;
   }
 }

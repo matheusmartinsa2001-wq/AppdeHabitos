@@ -12,6 +12,36 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Redesign do módulo Água (design do Claude Design)
+
+**Tipo**: Frontend (sem mudança de regra ou API)
+
+- **Visual oficial**: Nunito (embutida no build), azul-petróleo #0E7490, cartões brancos sobre fundo claro. Barra inferior Hoje · Histórico · Ajustes.
+- **Hoje**:
+  - tanque com água animada e total que "conta" até o valor novo;
+  - "Tomei" do lembrete da vez em destaque, com "em 25 min" ou "há 1 h";
+  - +200/+300/+500/Outro;
+  - linha única "Seu dia" com a marca de "agora";
+  - aviso com **Desfazer** logo depois de registrar, e comemoração ao bater a meta.
+- **Histórico**:
+  - cards grandes de sequência ("até ontem"/"contando hoje") e % do mês;
+  - calendário com o nível de cada dia;
+  - detalhe com "Faltaram X mL".
+- **Ajustes**:
+  - meta com −/+ 250 mL e "Salvar meta" só quando muda;
+  - barra da soma dos lembretes;
+  - painel inferior para criar, editar e excluir lembrete;
+  - chave de notificações com "Enviar teste";
+  - "Sair deste aparelho".
+- As duas sugestões do design fora das regras (recorde e lembrete sugerido) ficaram de fora.
+- **Testes**: frontend com 58 (novos para "Seu dia", lembrete da vez e meta −/+). O backend não mudou.
+- **Verificado no navegador**, em tamanho de iPhone (402×874), as três telas:
+  - registrar +300 com Desfazer;
+  - histórico com o nível dos dias;
+  - painel de edição de lembrete.
+
+---
+
 ## 2026-11-25 — Etapa 10: histórico da água (calendário, sequência e percentual)
 
 **Tipo**: Backend + frontend

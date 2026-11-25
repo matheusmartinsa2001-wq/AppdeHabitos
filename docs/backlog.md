@@ -20,6 +20,12 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
+- [x] **Redesign do módulo Água** (2026-11-25), a partir do design "Módulo Água · UX + visual novo" (Claude Design):
+  - paleta oficial e fonte Nunito;
+  - barra inferior Hoje · Histórico · Ajustes;
+  - Hoje com tanque animado, "Tomei" do lembrete da vez, linha "Seu dia" e aviso com Desfazer;
+  - Histórico com o nível de cada dia;
+  - Ajustes com meta −/+ 250 mL, painel de lembretes, chave de notificações e "Sair".
 - [x] **Etapa 10 — Água: histórico** (2026-11-25): tela `/agua/historico` com:
   - calendário do mês em verde/vermelho (hoje neutro);
   - sequência atual e percentual de dias com a meta batida no mês;
@@ -43,7 +49,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 10 — Água: calendário, sequência e percentual**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
+- **Redesign do módulo Água** (design do Claude Design): entregue em 2026-11-25, aguardando aprovação do usuário.
 
 ## Próximas funcionalidades
 
@@ -59,7 +65,8 @@ Nenhum bug em aberto no momento.
 
 - **Conferir `TRUST_PROXY_HOPS=2` em produção**: o limite de login deve contar por IP do aparelho, e não pelo IP da Vercel.
 - **`npm audit` do frontend**: 4 avisos moderados em `minimatch`, dependência de build do `vite-plugin-pwa`/workbox. Afeta só o build, não o app no celular. A correção sugerida (`--force`) rebaixaria o plugin para a 1.x. Rever quando sair versão nova.
-- **Paleta e ícone provisórios** (azul-petróleo com gota d'água): definir com o usuário.
+- **Ícone provisório** (gota d'água): a paleta virou oficial com o redesign; o ícone ainda é o provisório.
+- **Sugestões do design fora das regras** (ficaram de fora, a pedido): recorde de dias seguidos no Histórico e "+ Adicionar lembrete sugerido" quando os lembretes não somam a meta. Incluir só se o usuário pedir.
 
 - Etapa 9 (push): o backend gratuito "dorme" e pode atrasar ou perder o disparo dos lembretes. Resolvido na Etapa 2 com um cron externo gratuito a cada minuto. Na Etapa 9, medir o atraso real no iPhone.
 - Decidir se o projeto vai para um repositório git (local e/ou remoto) — não criar remoto nem fazer push sem perguntar.
