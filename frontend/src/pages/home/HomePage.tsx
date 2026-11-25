@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 import { getHealth } from '@/services/healthService'
@@ -53,6 +54,19 @@ export function HomePage() {
           Sair
         </Button>
       </header>
+
+      <section className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4">
+        <div>
+          <h2 className="font-semibold">Água</h2>
+          <p className="text-sm text-muted-foreground">Meta diária e lembretes</p>
+        </div>
+        <Link
+          to="/agua/configuracao"
+          className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+        >
+          Configurar
+        </Link>
+      </section>
 
       <section className="rounded-lg border border-border bg-card p-4" aria-live="polite">
         <h2 className="font-semibold">Conexão com o servidor</h2>

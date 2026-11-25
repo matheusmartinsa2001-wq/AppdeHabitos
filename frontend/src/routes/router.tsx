@@ -1,13 +1,17 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { HomePage } from '@/pages/home/HomePage'
+import { WaterSettingsPage } from '@/pages/water/WaterSettingsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export const routes = [
   { path: '/login', element: <LoginPage /> },
   {
     element: <ProtectedRoute />,
-    children: [{ path: '/', element: <HomePage /> }],
+    children: [
+      { path: '/', element: <HomePage /> },
+      { path: '/agua/configuracao', element: <WaterSettingsPage /> },
+    ],
   },
   { path: '*', element: <Navigate to="/" replace /> },
 ]

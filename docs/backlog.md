@@ -20,13 +20,18 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
+- [x] **Etapa 7 — Água: meta e lembretes** (2026-11-25): tela `/agua/configuracao`, com:
+  - meta diária com histórico por dia;
+  - lembretes (criar, editar, excluir; sem horário repetido);
+  - aviso quando os lembretes não somam a meta;
+  - atalho "Água → Configurar" na tela inicial.
 - [x] **Etapa 6 — Primeiro deploy** (2026-11-25):
   - app na Vercel (https://appde-habitos.vercel.app) com repasse de `/api` ao backend no Render (https://appdehabitos.onrender.com) e Postgres no Neon, tudo no plano gratuito;
   - testado no iPhone pelo usuário: login, instalação na tela de início em tela cheia, sessão mantida ao fechar e reabrir, "Sair".
 
 ## Em andamento
 
-- **Etapa 6 — Primeiro deploy e teste no iPhone**: no ar e testada no iPhone em 2026-11-25, aguardando aprovação do usuário.
+- **Etapa 7 — Água: configuração (meta e lembretes)**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
 
 ## Próximas funcionalidades
 

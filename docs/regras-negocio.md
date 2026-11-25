@@ -22,6 +22,8 @@ Requisitos definidos com o usuário em 2026-11-25.
 ### Meta diária
 
 - A meta diária (em mL) é **um valor cadastrado à parte**. Não é a soma dos lembretes.
+- **Limites da meta**: de 500 a 10.000 mL (2026-11-25).
+- **Antes da primeira meta**, o campo já vem preenchido com **4.000 mL** como sugestão, mas nada é gravado até o usuário salvar. O calendário só começa quando a meta é salva (2026-11-25).
 - Quando a **soma dos mL dos lembretes for menor que a meta**, o app mostra um aviso dizendo que, seguindo só os lembretes, a meta não será batida.
   - O aviso aparece na tela de configuração (ao salvar a meta ou os lembretes) e na tela de Água do dia. Não é uma notificação push.
 - Se a meta mudar, **cada dia continua avaliado pela meta que valia naquele dia**. O app guarda a meta de cada dia.
@@ -29,7 +31,8 @@ Requisitos definidos com o usuário em 2026-11-25.
 
 ### Lembretes
 
-- Cada lembrete tem um **horário** e uma **quantidade em mL**.
+- Cada lembrete tem um **horário** e uma **quantidade em mL**, de **50 a 2.000 mL** (2026-11-25).
+- Um lembrete pode ter o horário e os mL **editados**, ou ser **excluído** (exclusão lógica: o histórico de registros continua).
 - Os lembretes são **iguais todos os dias**. Não há variação por dia da semana.
 - Não pode haver dois lembretes ativos no mesmo horário (2026-11-25).
 - No horário do lembrete, o app envia **uma única notificação**. Ela não se repete, mesmo que o lembrete não seja confirmado.

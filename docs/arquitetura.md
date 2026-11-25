@@ -88,6 +88,7 @@ Igual ao Vivo, com a conta única e só senha:
 | `config` | Carregamento e validação das variáveis de ambiente | ✅ Etapa 4 |
 | `database` | `PrismaService` (Prisma 7 + adapter pg) | ✅ Etapa 4 |
 | `health` | `GET /api/health`: confere API e banco | ✅ Etapa 4 |
+| `water` | Módulo Água. Etapa 7: meta diária (histórico por dia), lembretes (CRUD com exclusão lógica), soma × meta. Usa `Clock` (`common/services/clock.service.ts`) para "hoje" em Brasília | ✅ Etapa 7 |
 | `auth` | Login só por senha, refresh opaco e rotativo, logout, `JwtAuthGuard` global, `AccountBootstrapService` (conta única a partir de `ADMIN_PASSWORD` no boot) | ✅ Etapa 5 |
 | `[A DEFINIR]` | Módulos de domínio após a conversa de requisitos | — |
 
@@ -100,7 +101,8 @@ Igual ao Vivo, com a conta única e só senha:
 | `contexts/AuthContext` | Estado da sessão: `checking` / `offline` / `authenticated` / `anonymous` |
 | `routes/` | `router.tsx` (`/login`, `/` protegida) e `ProtectedRoute` |
 | `pages/auth/LoginPage` | Tela de senha |
-| `pages/home/HomePage` | Tela inicial provisória (conexão + "Sair") até o módulo Água |
+| `pages/home/HomePage` | Tela inicial provisória: atalho "Água → Configurar", conexão e "Sair" |
+| `pages/water/` | `WaterSettingsPage` (`/agua/configuracao`), `GoalForm`, `ReminderForm` (adicionar/editar), `ReminderItem` (editar, excluir com confirmação), `RemindersSummary` (soma × meta e aviso), `waterRules.ts` (limites e esquemas zod iguais aos do backend) |
 | `components/ui/` | `Button` (com `loading`), `Input` (16px, sem zoom no iPhone) |
 | `services/*Service.ts` | Um arquivo por domínio, funções que chamam a API e tipam a resposta |
 | `pages/<dominio>/` | `[A DEFINIR]` |

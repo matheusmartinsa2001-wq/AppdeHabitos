@@ -54,6 +54,61 @@ Sem corpo; usa o cookie.
 
 - `204`: revoga o refresh token do cookie e apaga o cookie.
 
+## Água (`/api/water`)
+
+Todas exigem login.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/water/settings` | Meta de hoje, lembretes e a soma × meta |
+| PUT | `/water/goal` | Define a meta diária (vale a partir de hoje) |
+| POST | `/water/reminders` | Cria um lembrete |
+| PATCH | `/water/reminders/:id` | Altera horário e/ou mL |
+| DELETE | `/water/reminders/:id` | Exclui (exclusão lógica) |
+
+### `GET /water/settings` e resposta de `PUT /water/goal`
+
+```json
+{
+  "goalMl": 3000,
+  "goalEffectiveFrom": "2026-11-25",
+  "reminders": [
+    { "id": "uuid", "time": "08:00", "amountMl": 1000 },
+    { "id": "uuid", "time": "10:30", "amountMl": 1500 }
+  ],
+  "remindersTotalMl": 2500,
+  "remindersShortfallMl": 500
+}
+```
+
+- Antes da primeira meta, `goalMl`, `goalEffectiveFrom` e `remindersShortfallMl` são `null`.
+- `remindersShortfallMl` é `0` quando os lembretes chegam à meta.
+- A meta é a que vale **hoje** em Brasília. Os lembretes vêm em ordem de horário.
+
+### `PUT /water/goal`
+
+Corpo `{ "goalMl": 3000 }`, inteiro de 500 a 10.000.
+
+- Grava com vigência a partir de hoje (Brasília). Mudar de novo no mesmo dia só atualiza.
+- `400` fora dos limites.
+
+### `POST /water/reminders` / `PATCH /water/reminders/:id`
+
+Corpo `{ "time": "08:30", "amountMl": 500 }`. No `PATCH`, os dois campos são opcionais.
+
+- `time`: `HH:MM`, horário de Brasília.
+- `amountMl`: inteiro de 50 a 2.000.
+- Respostas:
+  - `201`/`200`: `{ "id", "time", "amountMl" }`;
+  - `409`: `"Já existe um lembrete às 08:30"`;
+  - `404`: `"Lembrete não encontrado"` (inexistente ou excluído);
+  - `400`: validação, ou id que não é UUID.
+
+### `DELETE /water/reminders/:id`
+
+- `204` com exclusão lógica (`deletedAt`), que libera o horário.
+- `404` se não existir.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

@@ -9,6 +9,7 @@ import { appConfig, jwtConfig, securityConfig } from './config/configuration';
 import { validateEnvironment } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { WaterModule } from './water/water.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { HealthModule } from './health/health.module';
     DatabaseModule,
     AuthModule,
     HealthModule,
+    WaterModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },

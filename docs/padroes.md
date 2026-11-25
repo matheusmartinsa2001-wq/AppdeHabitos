@@ -51,6 +51,8 @@ Nunca espalhar (`...spread`) dois `Prisma.XWhereInput` no mesmo nível se ambos 
 
 ### Datas e fuso horário
 
+- **"Agora" sempre por injeção**: service que depende de "hoje" recebe `Clock` (`common/services/clock.service.ts`) e calcula o dia com `brasiliaNow(clock.now())`. Nos testes, passar um relógio fixo.
+
 - **Crítico para um app de hábitos** ("fiz hoje?", sequências). Regra de fuso `[A DEFINIR]` na conversa de requisitos (fuso do usuário, fuso fixo ou configurável).
 - Datas de calendário (sem hora) guardadas como data, não como instante.
 - Nunca misturar métodos UTC e locais no mesmo cálculo de data.
@@ -125,4 +127,6 @@ Três camadas automatizadas (configuradas na Etapa 4). Rodar as três antes de c
 - **Ponta a ponta**: banco próprio cujo nome **precisa** terminar em `_e2e`, recriado e migrado a cada rodada. O app sobe com o mesmo `configureApp` do `main.ts`.
 - **Frontend**: Vitest + jsdom + Testing Library. Componentes com rota: `renderWithProviders(ui, { route, routes })` (`src/test/render.tsx`, data router em memória).
 - **Cuidado com `beforeEach(() => mock.mockReset())` em uma linha**: o hook devolve a função mock, e o Vitest trata função devolvida como limpeza, chamando o mock depois do teste (um mock que rejeita quebra o teste). Sempre usar chaves: `beforeEach(() => { mock.mockReset() })`.
-- Mock que rejeita: `mockImplementation(() => Promise.reject(erro))`. Para "hoje", `vi.useFakeTimers({ toFake: ['Date'] })` + `vi.setSystemTime(...)`. Fuso de teste fixo `[A DEFINIR]`.
+- Mock que rejeita: `mockImplementation(() => Promise.reject(erro))`.
+- **E2E e o limite de login (5 por minuto)**: fazer o login uma vez no `beforeAll` e, entre os testes, limpar só as tabelas do módulo, em vez de chamar `resetDatabase` + `login` em cada teste.
+- **Campos numéricos do formulário**: o valor do input é texto. O zod faz `regex` de dígitos, `transform(Number)` e `pipe(z.number().min().max())`, com mensagens em mL formatadas (`formatMl`). Para "hoje", `vi.useFakeTimers({ toFake: ['Date'] })` + `vi.setSystemTime(...)`. Fuso de teste fixo `[A DEFINIR]`.

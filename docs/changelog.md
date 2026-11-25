@@ -12,6 +12,24 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 7: Água, meta diária e lembretes
+
+**Tipo**: Backend + frontend
+
+- **API** (`/api/water`, módulo `water`):
+  - `GET settings`;
+  - `PUT goal` (vale a partir de hoje em Brasília; uma linha por dia de vigência);
+  - `POST`/`PATCH`/`DELETE reminders` (horário `HH:MM`, 50–2.000 mL; sem horário repetido, com 409 e mensagem; exclusão lógica).
+- **Tela `/agua/configuracao`**:
+  - meta com sugestão de 4.000 mL antes da primeira;
+  - lembretes em ordem de horário, com edição na própria linha e exclusão com confirmação;
+  - soma × meta com o aviso amarelo de quanto falta;
+  - atalho "Água → Configurar" na tela inicial.
+- **Testes**: backend com 33 unitários e 25 ponta a ponta; frontend com 28.
+- **Verificado no navegador** (tamanho de celular): salvar a meta, adicionar lembretes, horário repetido recusado, excluir com confirmação, aviso da soma atualizado.
+
+---
+
 ## 2026-11-25 — Etapa 6: app no ar e testado no iPhone
 
 **Tipo**: Infra
