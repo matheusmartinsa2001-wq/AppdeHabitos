@@ -77,7 +77,15 @@ export function validateEnvironment(config: Record<string, unknown>) {
   });
 
   if (errors.length > 0) {
-    throw new Error(`Variáveis de ambiente inválidas: ${errors.toString()}`);
+    // Uma linha só, com o nome da variável e as regras que falharam — nunca o valor
+    // (que pode ser uma senha). Fica fácil de ler no log do provedor.
+    const details = errors
+      .map(
+        (error) =>
+          `${error.property} (${Object.keys(error.constraints ?? {}).join(', ')})`,
+      )
+      .join('; ');
+    throw new Error(`Variáveis de ambiente inválidas: ${details}`);
   }
 
   return validatedConfig;
