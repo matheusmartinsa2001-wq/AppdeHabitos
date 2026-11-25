@@ -20,6 +20,12 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
+- [x] **Etapa 10 — Água: histórico** (2026-11-25): tela `/agua/historico` com:
+  - calendário do mês em verde/vermelho (hoje neutro);
+  - sequência atual e percentual de dias com a meta batida no mês;
+  - navegação entre meses (do mês da primeira meta até o atual);
+  - detalhe do dia ao tocar.
+- [x] **Etapa 9 — Notificações dos lembretes** (2026-11-25): Web Push com chaves próprias, disparo pelo cron-job.org a cada minuto, uma notificação por lembrete por dia; testado no iPhone.
 - [x] **Etapa 8 — Água do dia** (2026-11-25): tela inicial com:
   - total × meta, barra de progresso e "quanto falta";
   - "Tomei" nos lembretes;
@@ -37,7 +43,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 9 — Notificações dos lembretes**: no ar e funcionando no iPhone (chaves no Render e cron no cron-job.org configurados pelo usuário) em 2026-11-25, aguardando aprovação.
+- **Etapa 10 — Água: calendário, sequência e percentual**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
 
 ## Próximas funcionalidades
 

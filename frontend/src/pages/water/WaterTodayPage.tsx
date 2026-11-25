@@ -120,6 +120,16 @@ export function WaterTodayPage() {
 
       <WaterProgress today={today} />
 
+      <Link
+        to="/agua/historico"
+        className="flex min-h-11 items-center justify-between rounded-lg border border-border bg-card px-4 text-sm font-medium"
+      >
+        <span>📅 Histórico: calendário, sequência e %</span>
+        <span aria-hidden className="text-muted-foreground">
+          ›
+        </span>
+      </Link>
+
       {shortfall > 0 && (
         <p className="rounded-md border border-warning px-3 py-2 text-sm text-warning">
           ⚠ Seus lembretes somam menos que a meta: seguindo só eles, faltam {formatMl(shortfall)}.

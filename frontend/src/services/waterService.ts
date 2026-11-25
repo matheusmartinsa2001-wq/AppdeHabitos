@@ -1,4 +1,4 @@
-import type { ReminderInput, WaterReminder, WaterSettings, WaterToday } from '@/types/water'
+import type { ReminderInput, WaterHistory, WaterReminder, WaterSettings, WaterToday } from '@/types/water'
 import { api } from './api'
 
 export async function getWaterSettings(): Promise<WaterSettings> {
@@ -42,5 +42,11 @@ export async function addWaterIntake(amountMl: number): Promise<WaterToday> {
 
 export async function deleteWaterIntake(id: string): Promise<WaterToday> {
   const { data } = await api.delete<WaterToday>(`/water/intakes/${id}`)
+  return data
+}
+
+/** `month` no formato YYYY-MM; sem ele, o mês atual. */
+export async function getWaterHistory(month?: string): Promise<WaterHistory> {
+  const { data } = await api.get<WaterHistory>('/water/history', { params: month ? { month } : undefined })
   return data
 }

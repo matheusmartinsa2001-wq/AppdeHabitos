@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { WaterTodayPage } from '@/pages/water/WaterTodayPage'
+import { WaterHistoryPage } from '@/pages/water/WaterHistoryPage'
 import { WaterSettingsPage } from '@/pages/water/WaterSettingsPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
@@ -11,6 +12,7 @@ export const routes = [
     children: [
       { path: '/', element: <WaterTodayPage /> },
       { path: '/agua/configuracao', element: <WaterSettingsPage /> },
+      { path: '/agua/historico', element: <WaterHistoryPage /> },
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

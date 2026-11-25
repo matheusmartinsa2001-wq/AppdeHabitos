@@ -55,6 +55,30 @@ export class WaterRepository {
     return this.prisma.waterReminder.update({ where: { id }, data });
   }
 
+  /** Todo o histórico da meta, do mais antigo ao mais novo (poucas linhas: uma por mudança). */
+  listGoalChanges() {
+    return this.prisma.waterGoalChange.findMany({
+      orderBy: { effectiveFrom: 'asc' },
+      select: { effectiveFrom: true, goalMl: true },
+    });
+  }
+
+  /** Total bebido por dia no intervalo (inclusive). */
+  async sumIntakesByDay(
+    from: Date,
+    to: Date,
+  ): Promise<{ day: Date; totalMl: number }[]> {
+    const rows = await this.prisma.waterIntake.groupBy({
+      by: ['day'],
+      where: { day: { gte: from, lte: to } },
+      _sum: { amountMl: true },
+    });
+    return rows.map((row) => ({
+      day: row.day,
+      totalMl: row._sum.amountMl ?? 0,
+    }));
+  }
+
   listIntakesForDay(day: Date) {
     return this.prisma.waterIntake.findMany({
       where: { day },

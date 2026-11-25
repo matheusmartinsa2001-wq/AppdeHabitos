@@ -144,6 +144,35 @@ Todas respondem com o resumo de hoje (`200`, ou `201` no registro livre):
   - `404`: lembrete (inexistente ou excluído) ou registro não encontrado;
   - `400`: validação.
 
+## Histórico da água (`/api/water/history`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| GET | `/water/history?month=2026-11` | Login | Calendário do mês, sequência e percentual. Sem `month`, usa o mês atual (Brasília) |
+
+```json
+{
+  "month": "2026-11",
+  "days": [{ "day": "2026-11-24", "status": "met", "goalMl": 3000, "totalMl": 3100 }],
+  "metDays": 4,
+  "evaluatedDays": 5,
+  "percent": 80,
+  "currentStreak": 3,
+  "firstDay": "2026-11-20",
+  "canGoBack": true,
+  "canGoForward": false
+}
+```
+
+- `days` traz todos os dias do mês. `status`:
+  - `met`: total maior ou igual à meta do dia;
+  - `missed`: abaixo da meta;
+  - `today`: hoje, em andamento;
+  - `none`: antes da primeira meta ou no futuro.
+- `percent` é `metDays/evaluatedDays` arredondado, ou `null` sem dias avaliados.
+- `currentStreak` conta os dias seguidos até ontem, mais hoje se já bateu.
+- `month` inválido: `400` "Mês precisa estar no formato AAAA-MM (ex.: 2026-11)".
+
 ## Notificações (`/api/push`)
 
 Todas exigem login.

@@ -12,6 +12,21 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 10: histórico da água (calendário, sequência e percentual)
+
+**Tipo**: Backend + frontend
+
+- **API**: `GET /api/water/history?month=AAAA-MM`. Cada dia é avaliado pela meta que valia nele, hoje fica neutro, e a resposta traz a sequência atual e o percentual do mês.
+- **Tela `/agua/historico`**, com atalho "📅 Histórico" na tela do dia:
+  - cards de sequência e % do mês;
+  - calendário colorido com legenda;
+  - setas entre meses (o mês fica na URL);
+  - toque no dia mostra "X de Y mL".
+- **Testes**: backend com 60 unitários e 44 ponta a ponta; frontend com 48.
+- **Verificado no navegador** (tamanho de celular, com dados de exemplo no banco local): cores, sequência (2 dias) e percentual (71%, 5 de 7) corretos.
+
+---
+
 ## 2026-11-25 — Etapa 9: notificações dos lembretes
 
 **Tipo**: Backend + frontend + infra

@@ -23,8 +23,8 @@ Divisão proposta, a confirmar junto com a aprovação da Etapa 1:
 
 - ✔ Etapa 7 — Configuração: meta diária (com histórico por dia), lembretes (horário + mL) e aviso quando os lembretes não somam a meta — aprovada em 2026-11-25.
 - ✔ Etapa 8 — Registro do que foi bebido (confirmar lembrete + registro livre, só no dia de hoje) e "quanto falta" — aprovada em 2026-11-25.
-- ✱ Etapa 9 — Notificação push no horário de cada lembrete, uma vez, sem repetir — no ar e testada no iPhone pelo usuário em 2026-11-25, aguardando aprovação.
-- ○ Etapa 10 — Acompanhamento macro: calendário verde/vermelho, sequência e percentual do mês
+- ✔ Etapa 9 — Notificação push no horário de cada lembrete, uma vez, sem repetir — no ar e testada no iPhone pelo usuário em 2026-11-25; aprovada.
+- ✱ Etapa 10 — Acompanhamento macro: calendário verde/vermelho, sequência e percentual do mês — entregue em 2026-11-25, aguardando aprovação.
 
 ## Fase 3+ — Outros hábitos
 

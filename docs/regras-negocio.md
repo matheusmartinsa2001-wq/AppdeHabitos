@@ -72,8 +72,10 @@ Regras de edição:
 - **Calendário do mês** com os dias em verde (meta batida) e vermelho (não batida).
   - O calendário começa no dia em que a primeira meta foi cadastrada. Antes disso não há dias avaliados.
   - O dia de hoje aparece **neutro (cinza)** até a meia-noite em Brasília, quando passa a verde ou vermelho (2026-11-25).
-- **Sequência** de dias seguidos batendo a meta.
-- **Percentual** de dias do mês com a meta batida.
+- **Sequência** de dias seguidos batendo a meta: conta os dias até ontem e soma hoje se a meta de hoje já foi batida (hoje continua neutro no calendário até a meia-noite).
+- **Percentual** de dias do mês com a meta batida: dias batidos ÷ dias já fechados e avaliados no mês (desde a primeira meta; hoje não entra). Mostrado também como "X de Y dias".
+- Dia sem nenhum registro conta como **não batido**.
+- Dá para navegar pelos meses, do mês da primeira meta até o mês atual. Tocar num dia mostra o total e a meta daquele dia.
 
 ## Outros hábitos
 

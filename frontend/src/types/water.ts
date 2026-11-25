@@ -52,3 +52,26 @@ export interface WaterToday {
   /** Mais recente primeiro */
   intakes: WaterIntake[]
 }
+
+/** met = batida (verde), missed = não batida (vermelho), today = em andamento, none = sem avaliação */
+export type WaterDayStatus = 'met' | 'missed' | 'today' | 'none'
+
+export interface WaterHistoryDay {
+  day: string
+  status: WaterDayStatus
+  goalMl: number | null
+  totalMl: number
+}
+
+export interface WaterHistory {
+  /** YYYY-MM */
+  month: string
+  days: WaterHistoryDay[]
+  metDays: number
+  evaluatedDays: number
+  percent: number | null
+  currentStreak: number
+  firstDay: string | null
+  canGoBack: boolean
+  canGoForward: boolean
+}
