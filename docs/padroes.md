@@ -105,6 +105,8 @@ pages/<dominio>/
 
 ### Layout responsivo
 
+- **`<input type="time">` no Safari do iPhone** tem largura e altura próprias e transborda de um `flex`. Colocar em grade com coluna fixa (`grid-cols-[7.5rem_minmax(0,1fr)]`), com `h-11 min-w-0 appearance-none` no campo. Campo de hora não mostra placeholder no iPhone, então o rótulo fica visível acima.
+
 - **Mobile primeiro** (PWA no iPhone, decisão de 2026-11-25). Respeitar a área segura do iPhone (`env(safe-area-inset-*)`, `viewport-fit=cover`) e áreas de toque de pelo menos 44px. Toda mudança de tela é verificada também no Safari do iPhone com o app instalado na tela de início.
 - Para esconder/mostrar elementos entre breakpoints, preferir `hidden`/`md:flex` a `translate-x-*` (problema real no Tailwind v4 do projeto Vivo).
 

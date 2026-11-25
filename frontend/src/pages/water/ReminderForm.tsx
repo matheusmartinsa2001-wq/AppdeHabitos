@@ -45,31 +45,33 @@ export function ReminderForm({ initial, submitLabel, onSubmit, onCancel, idPrefi
 
   return (
     <form onSubmit={handleSubmit(submit)} noValidate className="flex flex-col gap-2">
-      <div className="flex items-start gap-2">
-        <div className="w-28 shrink-0">
-          <label htmlFor={`${idPrefix}-time`} className="sr-only">
+      {/* Grade com colunas fixas: no Safari do iPhone o campo de horário tem largura e altura
+          próprias e transbordava por baixo do campo de mL. */}
+      <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] items-end gap-2">
+        <div className="min-w-0">
+          <label htmlFor={`${idPrefix}-time`} className="mb-1 block text-xs text-muted-foreground">
             Horário
           </label>
           <Input
             id={`${idPrefix}-time`}
             type="time"
             aria-invalid={errors.time ? true : undefined}
+            className="block h-11 min-w-0 appearance-none text-left [&::-webkit-date-and-time-value]:text-left"
             {...register('time')}
           />
         </div>
-        <div className="relative min-w-0 flex-1">
-          <label htmlFor={`${idPrefix}-amount`} className="sr-only">
+        <div className="relative min-w-0">
+          <label htmlFor={`${idPrefix}-amount`} className="mb-1 block text-xs text-muted-foreground">
             Quantidade em mL
           </label>
           <Input
             id={`${idPrefix}-amount`}
             inputMode="numeric"
-            placeholder="mL"
             aria-invalid={errors.amountMl ? true : undefined}
-            className="pr-10"
+            className="h-11 pr-10"
             {...register('amountMl')}
           />
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground">
+          <span className="pointer-events-none absolute right-3 bottom-0 flex h-11 items-center text-sm text-muted-foreground">
             mL
           </span>
         </div>

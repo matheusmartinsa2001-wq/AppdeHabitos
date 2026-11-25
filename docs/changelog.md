@@ -26,6 +26,7 @@ Registro resumido de cada entrega. Mais recente no topo.
   - soma × meta com o aviso amarelo de quanto falta;
   - atalho "Água → Configurar" na tela inicial.
 - **Testes**: backend com 33 unitários e 25 ponta a ponta; frontend com 28.
+- **Ajuste pedido pelo usuário no iPhone**: os campos de horário e mL do novo lembrete se sobrepunham no Safari. Agora ficam em grade de colunas fixas, com rótulo visível acima de cada um, e o campo de mL perdeu o "mL" repetido.
 - **Verificado no navegador** (tamanho de celular): salvar a meta, adicionar lembretes, horário repetido recusado, excluir com confirmação, aviso da soma atualizado.
 
 ---
