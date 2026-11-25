@@ -14,6 +14,10 @@ export default defineConfig({
     // Ver docs/decisoes.md (2026-11-25, "App será um PWA").
     VitePWA({
       registerType: 'autoUpdate',
+      // Service worker próprio (src/sw.ts) para receber as notificações dos lembretes.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       includeAssets: ['favicon.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'App de Hábitos',
@@ -37,9 +41,8 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        // Chamadas à API nunca vêm do cache do service worker.
-        navigateFallbackDenylist: [/^\/api/],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,png,svg,ico,webmanifest}'],
       },
     }),
   ],

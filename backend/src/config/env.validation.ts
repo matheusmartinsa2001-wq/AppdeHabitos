@@ -65,6 +65,29 @@ class EnvironmentVariables {
   @MinLength(8)
   @MaxLength(72) // limite do bcrypt
   ADMIN_PASSWORD?: string;
+
+  // Notificações (Etapa 9). Opcionais: sem as chaves VAPID, o app funciona, mas não envia push.
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  VAPID_PUBLIC_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  VAPID_PRIVATE_KEY?: string;
+
+  // Contato exigido pelo Web Push: uma URL https (o endereço do app) ou mailto:.
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  VAPID_SUBJECT?: string;
+
+  // Segredo que o cron externo envia no header X-Cron-Secret. Sem ele, o disparo fica fechado.
+  @IsOptional()
+  @IsString()
+  @MinLength(32)
+  CRON_SECRET?: string;
 }
 
 export function validateEnvironment(config: Record<string, unknown>) {

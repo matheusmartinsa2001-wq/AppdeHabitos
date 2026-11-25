@@ -1,4 +1,5 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import type { ReminderCache } from './reminder-cache';
 import type { WaterRepository } from './water.repository';
 import { WaterService } from './water.service';
 
@@ -23,6 +24,7 @@ const reminder = (
 describe('WaterService', () => {
   let repository: Record<string, jest.Mock>;
   let service: WaterService;
+  let reminderCache: { invalidate: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -35,7 +37,12 @@ describe('WaterService', () => {
       updateReminder: jest.fn(),
       softDeleteReminder: jest.fn().mockResolvedValue({}),
     };
-    service = new WaterService(repository as unknown as WaterRepository, clock);
+    reminderCache = { invalidate: jest.fn() };
+    service = new WaterService(
+      repository as unknown as WaterRepository,
+      clock,
+      reminderCache as unknown as ReminderCache,
+    );
   });
 
   describe('getSettings', () => {
@@ -149,6 +156,16 @@ describe('WaterService', () => {
         NotFoundException,
       );
       expect(repository.softDeleteReminder).not.toHaveBeenCalled();
+    });
+
+    it('criar, editar e excluir avisam o cache do disparo de notificações', async () => {
+      repository.createReminder.mockResolvedValue(reminder(480, 300, 'r1'));
+      repository.findActiveReminder.mockResolvedValue(reminder(480, 300, 'r1'));
+      repository.updateReminder.mockResolvedValue(reminder(480, 400, 'r1'));
+      await service.createReminder({ time: '08:00', amountMl: 300 });
+      await service.updateReminder('r1', { amountMl: 400 });
+      await service.deleteReminder('r1');
+      expect(reminderCache.invalidate).toHaveBeenCalledTimes(3);
     });
 
     it('excluir é exclusão lógica', async () => {

@@ -91,6 +91,18 @@ Em `frontend/vercel.json`, o repasse de `/api` aponta para o endereço do servi�
 3. Fechar o app, abrir de novo: deve continuar conectado (cookie funcionando).
 4. Testar "Sair" e entrar de novo.
 
+### 6. Notificações (Etapa 9)
+
+1. **Chaves**: os valores de produção (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `CRON_SECRET`) são gerados localmente com `npx web-push generate-vapid-keys` e um segredo aleatório. Vão só no Render (Environment) e o `CRON_SECRET` também no cron-job.org. Nunca no repositório nem no chat.
+2. **cron-job.org** (conta gratuita): criar um job com:
+   - URL `https://appdehabitos.onrender.com/api/jobs/water-reminders`;
+   - método **POST**;
+   - agenda **a cada 1 minuto**;
+   - em "Advanced" → Headers: `X-Cron-Secret` = o valor de `CRON_SECRET`;
+   - timeout o maior disponível, porque o Render pode estar acordando.
+   - Conferir no histórico do job: respostas `200` com `{"notified":[]}`.
+3. **No iPhone**: abrir o app pelo ícone da tela de início → Configurar → **Ativar notificações** → permitir → **Enviar teste**.
+
 ## Atualizações depois do primeiro deploy
 
 Cada push na branch `main` publica de novo no Render e na Vercel. As migrations novas rodam sozinhas quando o backend reinicia.

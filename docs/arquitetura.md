@@ -88,7 +88,8 @@ Igual ao Vivo, com a conta única e só senha:
 | `config` | Carregamento e validação das variáveis de ambiente | ✅ Etapa 4 |
 | `database` | `PrismaService` (Prisma 7 + adapter pg) | ✅ Etapa 4 |
 | `health` | `GET /api/health`: confere API e banco | ✅ Etapa 4 |
-| `water` | Módulo Água. Etapa 8: `WaterTodayService`/`WaterTodayController` (resumo do dia, "tomei", registro livre, desfazer só hoje). Etapa 7: meta diária (histórico por dia), lembretes (CRUD com exclusão lógica), soma × meta. Usa `Clock` (`common/services/clock.service.ts`) para "hoje" em Brasília | ✅ Etapa 7 |
+| `water` | Módulo Água. Etapa 9: `WaterJobsController` (`POST /jobs/water-reminders`, protegido por `X-Cron-Secret`), `WaterReminderDispatchService` (janela de 10 min, uma vez por dia, pula lembrete já tomado), `ReminderCache` (lembretes em memória). Etapa 8: `WaterTodayService`/`WaterTodayController` (resumo do dia, "tomei", registro livre, desfazer só hoje). Etapa 7: meta diária (histórico por dia), lembretes (CRUD com exclusão lógica), soma × meta. Usa `Clock` (`common/services/clock.service.ts`) para "hoje" em Brasília | ✅ Etapa 7 |
+| `push` | Web Push: inscrições por aparelho (`push_subscriptions`), status/chave pública, teste, envio para todos com limpeza das inscrições expiradas. `PushSender` isola a biblioteca `web-push` | ✅ Etapa 9 |
 | `auth` | Login só por senha, refresh opaco e rotativo, logout, `JwtAuthGuard` global, `AccountBootstrapService` (conta única a partir de `ADMIN_PASSWORD` no boot) | ✅ Etapa 5 |
 | `[A DEFINIR]` | Módulos de domínio após a conversa de requisitos | — |
 
@@ -101,6 +102,8 @@ Igual ao Vivo, com a conta única e só senha:
 | `contexts/AuthContext` | Estado da sessão: `checking` / `offline` / `authenticated` / `anonymous` |
 | `routes/` | `router.tsx` (`/login`, `/` protegida) e `ProtectedRoute` |
 | `pages/auth/LoginPage` | Tela de senha |
+| `sw.ts` | Service worker próprio (`injectManifest`): precache, `push` → notificação, toque → abre o app |
+| `lib/push.ts` / `services/pushService.ts` / `pages/water/NotificationsCard` | Suporte do navegador (iPhone só com o app instalado), permissão, inscrição e cancelamento; card na configuração com "Ativar notificações", "Enviar teste" e "Desativar" |
 | `pages/water/WaterTodayPage` | Tela inicial (`/`): Água do dia, com `WaterProgress` (total × meta) e `FreeIntakeForm` (+200/+300/+500 e outro valor), "Tomei", registros de hoje com "Desfazer", "Configurar" e "Sair". Recarrega ao voltar para o app (`visibilitychange`) |
 | `pages/water/` | `WaterSettingsPage` (`/agua/configuracao`), `GoalForm`, `ReminderForm` (adicionar/editar), `ReminderItem` (editar, excluir com confirmação), `RemindersSummary` (soma × meta e aviso), `waterRules.ts` (limites e esquemas zod iguais aos do backend) |
 | `components/ui/` | `Button` (com `loading`), `Input` (16px, sem zoom no iPhone) |

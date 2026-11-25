@@ -11,6 +11,7 @@ import type {
   WaterReminderDto,
   WaterSettingsDto,
 } from './dto/water-settings.dto';
+import { ReminderCache } from './reminder-cache';
 import { WaterRepository } from './water.repository';
 import { minuteOfDayToTime, timeToMinuteOfDay } from './water.rules';
 
@@ -23,6 +24,7 @@ export class WaterService {
   constructor(
     private readonly repository: WaterRepository,
     private readonly clock: Clock,
+    private readonly reminderCache: ReminderCache,
   ) {}
 
   async getSettings(): Promise<WaterSettingsDto> {
@@ -59,6 +61,7 @@ export class WaterService {
       minuteOfDay,
       dto.amountMl,
     );
+    this.reminderCache.invalidate();
     return this.toReminderDto(reminder);
   }
 
@@ -76,12 +79,14 @@ export class WaterService {
       minuteOfDay,
       amountMl: dto.amountMl,
     });
+    this.reminderCache.invalidate();
     return this.toReminderDto(reminder);
   }
 
   async deleteReminder(id: string): Promise<void> {
     await this.findReminderOrFail(id);
     await this.repository.softDeleteReminder(id);
+    this.reminderCache.invalidate();
   }
 
   private async findReminderOrFail(id: string) {

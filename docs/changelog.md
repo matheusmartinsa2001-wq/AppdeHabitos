@@ -12,6 +12,29 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-25 — Etapa 9: notificações dos lembretes
+
+**Tipo**: Backend + frontend + infra
+
+- **Backend**:
+  - módulo `push` (inscrições por aparelho, status, teste, envio com `web-push` e chaves VAPID próprias);
+  - `POST /api/jobs/water-reminders` para o cron-job.org, protegido por `X-Cron-Secret`.
+- **Regras do envio**:
+  - uma notificação por lembrete por dia, garantida no banco;
+  - até 10 min de atraso;
+  - lembrete já tomado não é notificado.
+  - Os lembretes ficam em memória para o cron de cada minuto não acordar o banco à toa.
+- **App**:
+  - service worker próprio (`src/sw.ts`) que mostra a notificação e abre o app ao tocar;
+  - card "Notificações dos lembretes" na configuração, com Ativar, Enviar teste e Desativar, e instruções quando o app não está instalado ou a permissão foi negada.
+- **Testes**: backend com 53 unitários e 41 ponta a ponta; frontend com 42.
+- **Verificado no Docker**:
+  - o disparo recusa chamadas sem o segredo e responde com o segredo;
+  - o card aparece na configuração.
+  - O envio real precisa do iPhone, porque o navegador embutido bloqueia notificações.
+
+---
+
 ## 2026-11-25 — Etapa 8: Água do dia
 
 **Tipo**: Backend + frontend

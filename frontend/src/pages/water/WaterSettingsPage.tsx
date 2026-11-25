@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import * as waterService from '@/services/waterService'
 import type { ReminderInput, WaterSettings } from '@/types/water'
 import { GoalForm } from './GoalForm'
+import { NotificationsCard } from './NotificationsCard'
 import { ReminderForm } from './ReminderForm'
 import { ReminderItem } from './ReminderItem'
 import { RemindersSummary } from './RemindersSummary'
@@ -108,6 +109,8 @@ export function WaterSettingsPage() {
       </section>
 
       <RemindersSummary settings={settings} />
+
+      <NotificationsCard />
     </main>
   )
 }

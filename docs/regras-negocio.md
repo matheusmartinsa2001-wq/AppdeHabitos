@@ -36,6 +36,10 @@ Requisitos definidos com o usuário em 2026-11-25.
 - Os lembretes são **iguais todos os dias**. Não há variação por dia da semana.
 - Não pode haver dois lembretes ativos no mesmo horário (2026-11-25).
 - No horário do lembrete, o app envia **uma única notificação**. Ela não se repete, mesmo que o lembrete não seja confirmado.
+  - Se o lembrete já foi marcado como "tomei" antes do horário, a notificação não é enviada (2026-11-25).
+  - Se o servidor atrasar (cron atrasado ou servidor gratuito "acordando"), a notificação ainda sai até **10 minutos** depois do horário. Depois disso, não sai mais naquele dia.
+  - Ao tocar na notificação, o app abre na tela de Água do dia.
+  - As notificações são ativadas por aparelho, na tela de configuração ("Ativar notificações", com "Enviar teste" e "Desativar").
   - O iPhone do usuário está no iOS 27.2.1, que suporta push em PWA instalado na tela de início.
 
 ### Registro do que foi bebido

@@ -92,6 +92,12 @@ pages/<dominio>/
 - Limites (`max`) iguais aos do backend; mensagens do zod em português.
 - Erro de submissão da API exibido no formulário, nunca `alert()`.
 
+### Service worker e notificações
+
+- O service worker é `src/sw.ts` (estratégia `injectManifest` do `vite-plugin-pwa`), com tsconfig próprio (`tsconfig.sw.json`, lib WebWorker), fora do `tsconfig.app.json`.
+- Pedir permissão de notificação **só dentro de um toque do usuário** (exigência do iPhone): `subscribeToPush` é chamado direto no `onClick`.
+- No lint (`set-state-in-effect`), função de carregamento chamada no `useEffect` usa cadeia de promessas (`.then(setState)`), não `async` com `setState`.
+
 ### Sessão no frontend
 
 - Access token só em memória (`services/api.ts`), nunca em `localStorage`. Renovação automática no interceptor; não implementar retry de 401 nas telas.

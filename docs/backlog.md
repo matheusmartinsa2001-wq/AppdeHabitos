@@ -37,7 +37,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Etapa 8 — Água do dia**: entregue e testada em 2026-11-25, aguardando aprovação do usuário.
+- **Etapa 9 — Notificações dos lembretes**: código pronto, testado e publicado em 2026-11-25. Falta o usuário colocar as chaves no Render, criar o cron no cron-job.org e testar no iPhone.
 
 ## Próximas funcionalidades
 

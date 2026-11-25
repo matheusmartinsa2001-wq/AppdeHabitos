@@ -13,6 +13,13 @@ export const jwtConfig = registerAs('jwt', () => ({
   refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
 }));
 
+export const pushConfig = registerAs('push', () => ({
+  vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
+  vapidPrivateKey: process.env.VAPID_PRIVATE_KEY,
+  vapidSubject: process.env.VAPID_SUBJECT,
+  cronSecret: process.env.CRON_SECRET,
+}));
+
 export const securityConfig = registerAs('security', () => ({
   bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS ?? '10', 10),
   /** Senha da conta única. Só existe em variável de ambiente; o banco guarda o hash. */

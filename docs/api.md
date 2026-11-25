@@ -144,6 +144,27 @@ Todas respondem com o resumo de hoje (`200`, ou `201` no registro livre):
   - `404`: lembrete (inexistente ou excluído) ou registro não encontrado;
   - `400`: validação.
 
+## Notificações (`/api/push`)
+
+Todas exigem login.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/push/status` | `{ "enabled": true, "publicKey": "..." }`. `enabled: false` quando o servidor está sem chaves VAPID |
+| POST | `/push/subscriptions` | Inscreve o aparelho (`PushSubscription.toJSON()`: `{ endpoint (https), keys: { p256dh, auth } }`). Mesmo endpoint de novo só atualiza. `204` |
+| DELETE | `/push/subscriptions` | `{ "endpoint": "..." }`: cancela. `204` |
+| POST | `/push/test` | Envia uma notificação de teste para todos os aparelhos: `{ sent, removed, failed }` (5 por minuto) |
+
+Sem chaves VAPID, `subscriptions` e `test` devolvem `503` "Notificações não configuradas no servidor".
+
+## Disparo dos lembretes (`/api/jobs`)
+
+| Método | Rota | Acesso | Descrição |
+|---|---|---|---|
+| POST | `/jobs/water-reminders` | Header `X-Cron-Secret` igual a `CRON_SECRET` (sem login) | Chamado a cada minuto pelo cron-job.org. Notifica os lembretes no horário (até 10 min de atraso), uma vez por lembrete por dia. Resposta: `{ "notified": ["08:00"] }`. Segredo ausente ou errado: `401` |
+
+Fica fora do Swagger. O cron chama o Render direto (`https://appdehabitos.onrender.com/api/jobs/water-reminders`), não pela Vercel.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

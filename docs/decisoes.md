@@ -194,6 +194,26 @@ O provedor exato de cada peça é escolhido na Etapa 6 (primeiro deploy).
 
 ---
 
+## 2026-11-25 — Etapa 9: notificações dos lembretes
+
+**Contexto**: enviar uma notificação no iPhone no horário de cada lembrete, sem nada pago. O backend gratuito do Render "dorme" e não roda job agendado sozinho. O Neon gratuito tem limite de horas de computação e também "dorme" sem uso.
+
+**Decisão**:
+- **Web Push padrão** com a biblioteca `web-push` (gratuita, código aberto) e chaves VAPID próprias (`VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY`/`VAPID_SUBJECT`). O Apple Push é usado pelo próprio iPhone, sem conta de desenvolvedor.
+- **Disparo por cron externo gratuito** (cron-job.org), a cada minuto, em `POST /api/jobs/water-reminders`, protegido pelo header `X-Cron-Secret` (`CRON_SECRET`, comparação em tempo constante). A chamada também mantém o Render acordado. Um serviço ligado o mês inteiro dá cerca de 744 h, abaixo das 750 h gratuitas do Render.
+- **Banco só no horário**: os lembretes ficam em memória (`ReminderCache`, invalidado pelo `WaterService` a cada mudança e recarregado a cada 6 h). O cron de cada minuto só consulta o banco quando algum lembrete está no horário. Assim o Neon continua "dormindo" entre um lembrete e outro.
+- **Uma vez por dia garantido no banco**: o envio primeiro "reserva" a linha em `water_reminder_dispatches` (único por lembrete+dia). Se outra chamada já reservou, não envia.
+- **Janela de 10 minutos** depois do horário, para cobrir atraso do cron ou o servidor acordando. Depois disso, não envia (seria tarde demais).
+- Lembrete já marcado como "tomei" antes do horário não é notificado.
+- **Service worker próprio** (`frontend/src/sw.ts`, estratégia `injectManifest`), com precache, recebimento do push e abertura do app ao tocar na notificação.
+- Inscrição expirada (404/410 do serviço de push) é apagada no envio seguinte.
+
+**Impacto**:
+- Novas variáveis no Render: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `CRON_SECRET`. São opcionais: sem elas, o app funciona sem notificações.
+- Conta gratuita no cron-job.org (passo a passo em `docs/deploy.md`).
+
+---
+
 <!-- Modelo para novas decisões:
 
 ## AAAA-MM-DD — Título curto

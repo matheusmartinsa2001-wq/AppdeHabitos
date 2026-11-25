@@ -5,10 +5,16 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
-import { appConfig, jwtConfig, securityConfig } from './config/configuration';
+import {
+  appConfig,
+  jwtConfig,
+  pushConfig,
+  securityConfig,
+} from './config/configuration';
 import { validateEnvironment } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { PushModule } from './push/push.module';
 import { WaterModule } from './water/water.module';
 
 @Module({
@@ -16,13 +22,14 @@ import { WaterModule } from './water/water.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [appConfig, jwtConfig, securityConfig],
+      load: [appConfig, jwtConfig, securityConfig, pushConfig],
       validate: validateEnvironment,
     }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     DatabaseModule,
     AuthModule,
     HealthModule,
+    PushModule,
     WaterModule,
   ],
   providers: [

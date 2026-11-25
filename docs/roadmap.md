@@ -22,8 +22,8 @@ O desenvolvimento segue um fluxo de etapas: uma etapa por vez, com aprovação e
 Divisão proposta, a confirmar junto com a aprovação da Etapa 1:
 
 - ✔ Etapa 7 — Configuração: meta diária (com histórico por dia), lembretes (horário + mL) e aviso quando os lembretes não somam a meta — aprovada em 2026-11-25.
-- ✱ Etapa 8 — Registro do que foi bebido (confirmar lembrete + registro livre, só no dia de hoje) e "quanto falta" — entregue em 2026-11-25, aguardando aprovação.
-- ○ Etapa 9 — Notificação push no horário de cada lembrete, uma vez, sem repetir
+- ✔ Etapa 8 — Registro do que foi bebido (confirmar lembrete + registro livre, só no dia de hoje) e "quanto falta" — aprovada em 2026-11-25.
+- ✱ Etapa 9 — Notificação push no horário de cada lembrete, uma vez, sem repetir
 - ○ Etapa 10 — Acompanhamento macro: calendário verde/vermelho, sequência e percentual do mês
 
 ## Fase 3+ — Outros hábitos
