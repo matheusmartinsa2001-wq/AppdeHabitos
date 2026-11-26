@@ -4,6 +4,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Concluído
 
+- [x] **Etapa 13 — Tarefas avulsas** (2026-11-26): tabelas `tasks`/`task_completions`, `/api/tasks`, módulo Tarefas com abas Hoje/Próximas/Atrasadas, criar/editar/excluir, concluir/desfazer. Aprovada pelo usuário.
 - [x] **Etapa 12 — Escolha de módulo** (2026-11-26): tela inicial com Água e Tarefas, Água em `/agua` com "‹ Módulos", notificação abrindo `/agua`. Aprovada pelo usuário.
 - [x] **Estrutura do projeto** (2026-11-25): pastas `backend/`, `frontend/`, `scripts/`, `docs/`, `CLAUDE.md` e documentação base com placeholders. Nenhum código de funcionalidade.
 - [x] **Etapa 1 — Requisitos** (2026-11-25): uso pessoal, login com senha e regras do módulo Água, aprovados pelo usuário.

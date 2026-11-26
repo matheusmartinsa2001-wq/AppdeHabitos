@@ -15,6 +15,7 @@ import { validateEnvironment } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { PushModule } from './push/push.module';
+import { TasksModule } from './tasks/tasks.module';
 import { WaterModule } from './water/water.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { WaterModule } from './water/water.module';
     HealthModule,
     PushModule,
     WaterModule,
+    TasksModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },

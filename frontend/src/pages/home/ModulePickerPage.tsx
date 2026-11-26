@@ -25,6 +25,7 @@ const MODULES: AppModule[] = [
   {
     name: 'Tarefas',
     description: 'Lista do dia, recorrentes e lembretes',
+    to: '/tarefas',
     icon: (
       <svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="m5 12.5 4.5 4.5L19 7.5" />

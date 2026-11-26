@@ -117,3 +117,38 @@ model WaterReminderDispatch {
   @@unique([reminderId, day])
   @@map("water_reminder_dispatches")
 }
+
+// ==================== MÓDULO TAREFAS ====================
+
+/// Tarefa da lista (Etapa 13: avulsas). Exclusão lógica via deletedAt.
+model Task {
+  id             String    @id @default(uuid()) @db.Uuid
+  title          String    @db.VarChar(120)
+  /// Dia (Brasília) da tarefa; null = sem data (aparece em Hoje até ser concluída).
+  dueDate        DateTime? @db.Date
+  /// Minuto do dia em Brasília (0..1439); só com dueDate.
+  dueMinuteOfDay Int?
+  deletedAt      DateTime? @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+
+  completions TaskCompletion[]
+
+  @@index([dueDate])
+  @@map("tasks")
+}
+
+/// Conclusão de uma tarefa num dia (Brasília). Avulsa: uma só (garantido no service).
+model TaskCompletion {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @db.Uuid
+  /// Dia (Brasília) em que foi concluída.
+  day         DateTime @db.Date
+  completedAt DateTime @default(now()) @db.Timestamptz(3)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Restrict)
+
+  @@unique([taskId, day])
+  @@index([day])
+  @@map("task_completions")
+}

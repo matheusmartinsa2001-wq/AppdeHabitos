@@ -8,6 +8,7 @@ PostgreSQL 16 (Neon, plano gratuito, em produção; container do Docker em desen
 
 | Migration | O que faz |
 |---|---|
+| `20261126223549_tasks` | Cria `tasks` e `task_completions` (Etapa 13), com os `CHECK` em SQL bruto (título não vazio, horário 0..1439, horário só com data) |
 | `20261125130000_refresh_token_hash_unique` | `refresh_tokens.tokenHash` passa a ser único (busca do token pelo hash, Etapa 5) |
 | `20261125120000_init` | Cria as 7 tabelas, o enum `WaterIntakeSource`, as FKs e, em SQL bruto, os `CHECK` (valores positivos, horário 0..1439, `source` × `reminderId`) e os índices únicos parciais (lembrete ativo por horário; confirmação por lembrete e dia) |
 
@@ -91,6 +92,15 @@ erDiagram
   - Só é possível criar ou apagar registros com `day` = hoje. Essa regra fica no service, e o banco não aceita `day` futuro.
 - **`water_reminder_dispatches`**: marca que a notificação de um lembrete foi enviada num dia. O único (`reminderId`, `day`) garante **uma notificação só por lembrete por dia**, mesmo que o cron chame o backend várias vezes ou duas chamadas se cruzem.
 
+### Módulo Tarefas (Etapa 13, aprovada em 2026-11-26)
+
+Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa 15) ganham colunas e tabelas nas etapas delas.
+
+- **`tasks`**: `id` uuid, `title` varchar(120), `dueDate` date nulo (sem data), `dueMinuteOfDay` int nulo (0..1439, horário de Brasília, só com `dueDate`), `deletedAt` (exclusão lógica), `createdAt`, `updatedAt`.
+- **`task_completions`**: `id` uuid, `taskId` FK, `day` date (dia em Brasília em que foi concluída), `completedAt` timestamptz. Única por (`taskId`, `day`). Para a tarefa avulsa, o service garante uma conclusão só. A tabela já serve às recorrentes (uma conclusão por ocorrência e dia) e ao histórico (concluídas por dia = contagem por `day`).
+- Regras no banco: `CHECK (dueMinuteOfDay BETWEEN 0 AND 1439)`, `CHECK (dueMinuteOfDay IS NULL OR dueDate IS NOT NULL)`, `CHECK (char_length(trim(title)) BETWEEN 1 AND 120)`.
+- Calculado, sem guardar: **Hoje** = sem data ou com data de hoje, não concluídas, mais as concluídas hoje (riscadas). **Próximas** = data futura, não concluídas. **Atrasadas** = data antes de hoje e não concluídas.
+
 ### Valores calculados (não guardados)
 
 - **Total do dia** = soma de `water_intakes.amountMl` do dia.
@@ -108,6 +118,8 @@ erDiagram
 | Não ter dois lembretes ativos no mesmo horário | índice único parcial em `minuteOfDay WHERE deletedAt IS NULL` (SQL bruto) |
 | Lembrete confirmado uma vez por dia | índice único parcial em (`day`, `reminderId`) `WHERE reminderId IS NOT NULL` (SQL bruto) |
 | `source` coerente com `reminderId` | `CHECK` na migration |
+| Tarefa: título não vazio, horário 0..1439 e só com data | `CHECK` em `tasks` (SQL bruto) |
+| Uma conclusão por tarefa e dia | `UNIQUE (taskId, day)` em `task_completions` (a avulsa só tem uma: garantido no service) |
 | Uma notificação por lembrete por dia | `UNIQUE (reminderId, day)` em `water_reminder_dispatches` |
 
 ## Enums

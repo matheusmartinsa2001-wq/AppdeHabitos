@@ -4,6 +4,16 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-26 — Etapa 13: tarefas avulsas
+
+**Tipo**: Backend + frontend + migration
+
+- Banco: `tasks` e `task_completions` (migration `20261126223549_tasks`).
+- API `/api/tasks`: listas Hoje/Próximas/Atrasadas, criar, editar, excluir (lógico), concluir e desfazer (só no mesmo dia). Data só hoje ou futura; horário só com data.
+- Módulo Tarefas aberto na escolha de módulo, com barra Tarefas · Histórico · Ajustes: abas com contagem (Atrasadas em vermelho), "+ Nova tarefa", painel de criar/editar com Hoje/Amanhã/Outra data/Sem data, horário vencido destacado em Hoje e aviso com Desfazer. Histórico "Em breve"; Ajustes com "Sair".
+
+---
+
 ## 2026-11-26 — Etapa 12: escolha de módulo
 
 **Tipo**: Frontend + endereço da notificação

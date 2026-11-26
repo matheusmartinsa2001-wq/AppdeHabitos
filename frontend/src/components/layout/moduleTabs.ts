@@ -7,3 +7,10 @@ export const WATER_TABS: readonly ShellTab[] = [
   { to: '/agua/historico', label: 'Histórico' },
   { to: '/agua/configuracao', label: 'Ajustes' },
 ]
+
+/** Abas do módulo Tarefas. */
+export const TASKS_TABS: readonly ShellTab[] = [
+  { to: '/tarefas', label: 'Tarefas' },
+  { to: '/tarefas/historico', label: 'Histórico' },
+  { to: '/tarefas/ajustes', label: 'Ajustes' },
+]

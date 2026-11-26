@@ -21,6 +21,7 @@ function setup() {
     routes: [
       { path: '/', element: <ModulePickerPage /> },
       { path: '/agua', element: <p>módulo água</p> },
+      { path: '/tarefas', element: <p>módulo tarefas</p> },
     ],
   })
 }
@@ -44,10 +45,10 @@ describe('ModulePickerPage', () => {
     await waitFor(() => expect(router.state.location.pathname).toBe('/agua'))
   })
 
-  it('Tarefas aparece como "Em breve" e não abre nada', () => {
-    setup()
-    expect(screen.getByText('Em breve')).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Tarefas/ })).not.toBeInTheDocument()
+  it('tocar em Tarefas abre o módulo Tarefas', async () => {
+    const { user, router } = setup()
+    await user.click(screen.getByRole('link', { name: /Tarefas/ }))
+    await waitFor(() => expect(router.state.location.pathname).toBe('/tarefas'))
   })
 
   it('"Sair deste aparelho" encerra a sessão', async () => {

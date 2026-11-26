@@ -194,6 +194,19 @@ Sem chaves VAPID, `subscriptions` e `test` devolvem `503` "Notificações não c
 
 Fica fora do Swagger. O cron chama o Render direto (`https://appdehabitos.onrender.com/api/jobs/water-reminders`), não pela Vercel.
 
+## Tarefas (`/api/tasks`) — Etapa 13
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/tasks` | As três listas de uma vez: `{ today, upcoming, overdue }`. Cada tarefa: `id`, `title`, `date` (`AAAA-MM-DD` ou `null`), `time` (`HH:MM` ou `null`), `done`, `completedToday` |
+| `POST` | `/tasks` | Cria. Corpo: `title` (1–120), `date` opcional (hoje ou futura), `time` opcional (exige `date`) |
+| `PATCH` | `/tasks/:id` | Edita título, data ou horário |
+| `DELETE` | `/tasks/:id` | Exclui (lógica). A conclusão continua no histórico |
+| `POST` | `/tasks/:id/complete` | Conclui hoje. `409` se já está concluída |
+| `DELETE` | `/tasks/:id/complete` | Desfaz. `409` se a conclusão não foi hoje |
+
+As respostas de escrita devolvem as três listas atualizadas, como `GET /tasks`.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |
