@@ -4,6 +4,25 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-26 — Etapa 12: escolha de módulo
+
+**Tipo**: Frontend + endereço da notificação
+
+- Nova tela inicial (`/`) com só a escolha de módulo: **Água** e **Tarefas** ("Em breve" até a Etapa 13), e "Sair deste aparelho".
+- O módulo Água continua igual, agora em `/agua` (Histórico e Ajustes já estavam em `/agua/...`). Botão "‹ Módulos" no topo das telas da Água.
+- `AppShell` recebe as abas do módulo (`WATER_TABS` em `components/layout/moduleTabs.ts`), pronto para a barra própria de Tarefas.
+- A notificação dos lembretes da Água abre direto `/agua`.
+
+---
+
+## 2026-11-26 — Módulo Tarefas: levantamento de requisitos
+
+**Tipo**: Documentação
+
+- `docs/regras-negocio.md` ganhou a seção "Módulo Tarefas" com as cinco funções aprovadas, as propostas de regra e seis perguntas em aberto. Roadmap com a Fase 3 (Tarefas). Nenhum código.
+
+---
+
 ## 2026-11-25 — Etapa 3: proposta de modelagem do banco
 
 **Tipo**: Documentação

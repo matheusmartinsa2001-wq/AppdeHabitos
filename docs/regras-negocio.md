@@ -79,7 +79,7 @@ Regras de edição:
 
 ### Telas (redesign de 2026-11-25)
 
-- A navegação é uma barra inferior com Hoje · Histórico · Ajustes. "Sair deste aparelho" fica em Ajustes.
+- Dentro do módulo, a navegação é uma barra inferior com Hoje · Histórico · Ajustes, e "‹ Módulos" no topo volta para a escolha de módulo. "Sair deste aparelho" fica em Ajustes.
 - **Hoje**:
   - o "Tomei" do **lembrete da vez** fica em destaque, logo abaixo do progresso. O lembrete da vez é o último pendente que já passou do horário ou, se nenhum passou, o próximo;
   - lembretes e registros aparecem numa linha só ("Seu dia"), com a marca de "agora";
@@ -89,6 +89,66 @@ Regras de edição:
   - a meta tem botões − / + de 250 mL e "Salvar meta" só aparece quando o valor muda;
   - criar e editar lembrete abrem um painel, e excluir pede confirmação;
   - as notificações ficam numa chave, com "Enviar teste".
+
+## Navegação entre módulos (2026-11-26)
+
+Decisão do usuário (2026-11-26), para não mexer no módulo Água e permitir novos módulos depois:
+
+- Ao abrir o app (depois do login ou com a sessão já ativa), aparece **só a escolha de módulo**: **Água** e **Tarefas**. Novos módulos entram como mais uma opção nessa tela.
+- **Água** abre o módulo exatamente como está hoje (barra Hoje · Histórico · Ajustes, mesmas telas e regras). Só o endereço muda: a tela Hoje da Água passa de `/` para `/agua`.
+- **Tarefas** abre o módulo novo, com a barra própria dele. Barra **Tarefas · Histórico · Ajustes**, com Hoje, Próximas e Atrasadas como abas no topo da tela Tarefas, e um botão "+ Nova tarefa".
+- Dentro de um módulo, um botão "‹ Módulos" no topo volta para a escolha.
+- Tocar numa notificação abre direto o módulo dela (Água ou Tarefas), sem passar pela escolha.
+- "Sair deste aparelho" continua em Ajustes da Água e aparece também em Ajustes de Tarefas e na tela de escolha.
+
+## Módulo Tarefas (lista de tarefas)
+
+Funções aprovadas pelo usuário em 2026-11-26; regras confirmadas em 2026-11-26 (respostas 1 a 5 = "ok" às sugestões).
+
+### Funções
+
+1. **Tarefas do dia**: criar, marcar como feita e desfazer, com prazo opcional.
+2. **Lembrete**: notificação no horário da tarefa, usando o mesmo sistema da Água (cron-job.org + Web Push).
+3. **Recorrentes**: tarefas que se repetem todo dia ou em dias da semana escolhidos.
+4. **Organização simples**: Hoje, Próximas e Atrasadas, sem projetos nem etiquetas.
+5. **Histórico**: calendário com as tarefas concluídas por dia.
+
+### Tarefa
+
+- Campos: **título** (obrigatório, até 120 caracteres), **data** (opcional), **horário** (opcional, só com data) e **repetição** (nenhuma, todo dia ou dias da semana escolhidos).
+- **Tarefa sem data** pode existir e aparece em **Hoje** até ser concluída (2026-11-26).
+- Editar e excluir a qualquer momento. A exclusão é lógica: o que já foi concluído continua contando no histórico.
+
+### Hoje, Próximas e Atrasadas
+
+- **Hoje**: tarefas com data de hoje, recorrentes que caem hoje e tarefas sem data. Ordem por horário, as sem horário no fim. As concluídas hoje ficam na lista, riscadas, até a meia-noite.
+- **Próximas**: tarefas com data futura, agrupadas por dia.
+- **Atrasadas**: tarefas avulsas com data passada e não concluídas. Uma tarefa só vira atrasada **no dia seguinte**, depois da meia-noite de Brasília. Durante o dia, a tarefa com horário vencido fica só destacada em Hoje (2026-11-26).
+- O dia vira à **meia-noite no horário de Brasília**, como na Água.
+
+### Concluir e desfazer
+
+- Tarefa avulsa pode ser concluída a qualquer momento, inclusive antes da data ou já atrasada. Conta no histórico do dia em que foi concluída.
+- Desfazer a conclusão só no mesmo dia (dias passados não mudam). Logo depois de marcar, aparece o aviso com **Desfazer**.
+
+### Recorrentes
+
+- Repetem **todo dia** ou em **dias da semana escolhidos**. Outras repetições ficam fora da primeira versão.
+- Cada dia é uma ocorrência separada. **Não acumula**: a ocorrência não feita fica como "não feita" no histórico daquele dia e não vai para Atrasadas; hoje aparece só a de hoje (2026-11-26).
+- Editar ou excluir uma recorrente vale de hoje em diante. Os dias passados não mudam.
+
+### Lembrete
+
+- Só para tarefa com horário. Chega **no horário exato**, sem opção de antecedência (2026-11-26).
+- Uma notificação, sem repetir, com a janela de 10 minutos de atraso da Água. Não é enviada se a tarefa já foi concluída. Tocar nela abre o módulo Tarefas.
+- Usa as notificações já ativadas no aparelho (a mesma inscrição serve para Água e Tarefas).
+
+### Histórico
+
+- Calendário do mês no visual do Histórico da Água, com o número de tarefas concluídas em cada dia (2026-11-26).
+- O dia fica **verde** quando tudo o que era daquele dia foi feito e **vermelho** quando faltou algo. Hoje fica neutro até a meia-noite, como na Água (2026-11-26).
+- "O que era daquele dia": as recorrentes que caíam no dia e as avulsas com data naquele dia. Dia sem nenhuma tarefa fica cinza e não entra na sequência nem no percentual.
+- **Sequência** e **percentual do mês** com as mesmas regras da Água (2026-11-26).
 
 ## Outros hábitos
 

@@ -54,7 +54,7 @@ export class WaterReminderDispatchService {
       const result = await this.pushService.broadcast({
         title: 'Hora de beber água 💧',
         body: `Lembrete das ${time}: ${reminder.amountMl} mL`,
-        url: '/',
+        url: '/agua', // abre direto o módulo Água, sem passar pela escolha
         tag: `agua-${reminder.id}`,
       });
       this.logger.log(

@@ -28,9 +28,21 @@ Divisão proposta, a confirmar junto com a aprovação da Etapa 1:
 
 ## Redesign do módulo Água (design "Módulo Água · UX + visual novo", Claude Design)
 
-- ✱ Novo visual e UX das três telas (Hoje, Histórico, Ajustes), sem mudar regras nem API. Entregue em 2026-11-25, aguardando aprovação.
+- ✔ Novo visual e UX das três telas (Hoje, Histórico, Ajustes), sem mudar regras nem API. Entregue em 2026-11-25, aprovado pelo usuário em 2026-11-26.
 
-## Fase 3+ — Outros hábitos
+## Fase 3 — Módulo Tarefas (pedido em 2026-11-26)
+
+- ✔ Etapa 11 — Requisitos do módulo Tarefas e da navegação entre módulos (`docs/regras-negocio.md`). Funções e respostas 1–6 aprovadas em 2026-11-26; itens marcados "(proposta)" aprovados em 2026-11-26.
+
+Divisão proposta (2026-11-26), aprovada em 2026-11-26:
+
+- ✔ Etapa 12 — Escolha de módulo (aprovada em 2026-11-26): tela inicial com Água e Tarefas, Água movida para `/agua` sem outra mudança, botão "‹ Módulos", notificação da Água abrindo `/agua`. Só frontend + o endereço da notificação.
+- ○ Etapa 13 — Tarefas avulsas: banco, criar/editar/excluir, concluir/desfazer, telas Hoje, Próximas e Atrasadas.
+- ○ Etapa 14 — Tarefas recorrentes (todo dia ou dias da semana), uma ocorrência por dia.
+- ○ Etapa 15 — Lembretes das tarefas no cron-job.org já existente.
+- ○ Etapa 16 — Histórico de Tarefas: calendário verde/vermelho com concluídas por dia, sequência e percentual.
+
+## Fase 4+ — Outros hábitos
 
 `[A DEFINIR]`: um módulo por hábito, na ordem combinada com o usuário.
 

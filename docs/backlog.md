@@ -4,6 +4,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Concluído
 
+- [x] **Etapa 12 — Escolha de módulo** (2026-11-26): tela inicial com Água e Tarefas, Água em `/agua` com "‹ Módulos", notificação abrindo `/agua`. Aprovada pelo usuário.
 - [x] **Estrutura do projeto** (2026-11-25): pastas `backend/`, `frontend/`, `scripts/`, `docs/`, `CLAUDE.md` e documentação base com placeholders. Nenhum código de funcionalidade.
 - [x] **Etapa 1 — Requisitos** (2026-11-25): uso pessoal, login com senha e regras do módulo Água, aprovados pelo usuário.
 - [x] **Etapa 2 — Stack** (2026-11-25): base do Vivo em planos gratuitos + cron externo gratuito para os lembretes. Regra do projeto: tudo gratuito.
@@ -20,7 +21,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
   - `JwtAuthGuard` global e limite de 5 tentativas de login por minuto;
   - tela de senha, sessão em memória com renovação automática, rotas protegidas e botão "Sair";
   - aviso de "sem conexão" diferente de "sem sessão".
-- [x] **Redesign do módulo Água** (2026-11-25), a partir do design "Módulo Água · UX + visual novo" (Claude Design):
+- [x] **Redesign do módulo Água** (2026-11-25, aprovado em 2026-11-26), a partir do design "Módulo Água · UX + visual novo" (Claude Design):
   - paleta oficial e fonte Nunito;
   - barra inferior Hoje · Histórico · Ajustes;
   - Hoje com tanque animado, "Tomei" do lembrete da vez, linha "Seu dia" e aviso com Desfazer;
@@ -49,7 +50,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Em andamento
 
-- **Redesign do módulo Água** (design do Claude Design): entregue em 2026-11-25, aguardando aprovação do usuário.
+- **Módulo Tarefas — requisitos** (2026-11-26): cinco funções aprovadas (tarefas do dia, lembrete, recorrentes, Hoje/Próximas/Atrasadas, histórico). Respostas 1–6 dadas em 2026-11-26, incluindo a nova tela de escolha de módulo (Água / Tarefas) após o login. Detalhes aprovados em 2026-11-26.
 
 ## Próximas funcionalidades
 

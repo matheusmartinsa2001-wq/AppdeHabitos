@@ -229,6 +229,18 @@ O provedor exato de cada peça é escolhido na Etapa 6 (primeiro deploy).
 
 ---
 
+## 2026-11-26 — Tela de escolha de módulo
+
+**Contexto**: com o segundo módulo (Tarefas), a barra inferior Hoje · Histórico · Ajustes, que é toda da Água, não comporta outro módulo sem mexer na Água.
+
+**Decisão** (do usuário): ao abrir o app aparece só a escolha de módulo (Água, Tarefas). Cada módulo tem a própria barra inferior. A Água continua exatamente como está; só o endereço da tela Hoje muda de `/` para `/agua`.
+
+**Justificativa**: não altera o módulo Água e deixa espaço para novos módulos (cada um vira mais uma opção na escolha).
+
+**Impacto**: rota `/` passa a ser a escolha de módulo; a notificação da Água (`url` do push) passa a abrir `/agua`. Tarefas ganha rotas próprias em `/tarefas`.
+
+---
+
 <!-- Modelo para novas decisões:
 
 ## AAAA-MM-DD — Título curto

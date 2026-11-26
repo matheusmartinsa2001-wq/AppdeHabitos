@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
+import { WATER_TABS } from '@/components/layout/moduleTabs'
 import { LoginPage } from '@/pages/auth/LoginPage'
+import { ModulePickerPage } from '@/pages/home/ModulePickerPage'
 import { WaterHistoryPage } from '@/pages/water/WaterHistoryPage'
 import { WaterSettingsPage } from '@/pages/water/WaterSettingsPage'
 import { WaterTodayPage } from '@/pages/water/WaterTodayPage'
@@ -11,11 +13,13 @@ export const routes = [
   {
     element: <ProtectedRoute />,
     children: [
+      // Tela inicial: só a escolha do módulo (Água, Tarefas).
+      { path: '/', element: <ModulePickerPage /> },
       {
-        // Barra inferior Hoje · Histórico · Ajustes em todas as telas logadas.
-        element: <AppShell />,
+        // Módulo Água: barra inferior Hoje · Histórico · Ajustes.
+        element: <AppShell tabs={WATER_TABS} />,
         children: [
-          { path: '/', element: <WaterTodayPage /> },
+          { path: '/agua', element: <WaterTodayPage /> },
           { path: '/agua/historico', element: <WaterHistoryPage /> },
           { path: '/agua/configuracao', element: <WaterSettingsPage /> },
         ],

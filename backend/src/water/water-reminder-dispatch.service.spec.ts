@@ -55,7 +55,7 @@ describe('WaterReminderDispatchService', () => {
     expect(push.broadcast).toHaveBeenCalledWith({
       title: 'Hora de beber água 💧',
       body: 'Lembrete das 08:00: 500 mL',
-      url: '/',
+      url: '/agua',
       tag: 'agua-r8',
     });
   });

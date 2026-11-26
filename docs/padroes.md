@@ -84,7 +84,7 @@ pages/<dominio>/
 
 - Calmo e minimalista, tema claro, fonte **Nunito** (`@fontsource/nunito`, embutida no build: abre sem internet), azul-petróleo **#0E7490**.
 - Cores só pelas variáveis de `src/index.css` (`bg-primary`, `text-ink-2`, `bg-met`, `bg-warning-soft`...). O design de referência é o "Módulo Água · UX + visual novo" do Claude Design.
-- Telas logadas dentro do `AppShell` (barra inferior flutuante Hoje · Histórico · Ajustes). Título da tela: rótulo pequeno + h1 de 34px.
+- A tela inicial (`/`) é a escolha de módulo. As telas de cada módulo ficam dentro do `AppShell` com as abas do módulo (`tabs`), com "‹ Módulos" no topo; as rotas do módulo ficam sob um prefixo próprio (`/agua`, `/tarefas`). Título da tela: rótulo pequeno + h1 de 34px.
 - Cartões brancos com cantos de 24px sobre o fundo `--background`, botões principais de 52–64px de altura e áreas de toque de pelo menos 44px.
 - Confirmação de ação: `useToast().showToast(texto, { onUndo })` (`components/ui/toast.tsx`), o aviso escuro acima da barra, com "Desfazer" quando dá para voltar atrás.
 - Formulário de criar/editar: painel que sobe de baixo (ex.: `ReminderSheet`). O formulário interno tem `key` por abertura, para começar limpo sem `setState` em efeito.
