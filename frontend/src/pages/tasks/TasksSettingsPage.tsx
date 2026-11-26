@@ -1,6 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext'
+import { NotificationsCard } from '@/pages/water/NotificationsCard'
 
-/** Ajustes de Tarefas. Por enquanto só "Sair"; as notificações chegam com os lembretes (Etapa 15). */
+/**
+ * Ajustes de Tarefas: notificações (a mesma inscrição do aparelho vale para Água e Tarefas)
+ * e "Sair".
+ */
 export function TasksSettingsPage() {
   const { logout } = useAuth()
 
@@ -10,6 +14,10 @@ export function TasksSettingsPage() {
         <span className="text-[15px] font-bold text-muted-foreground">Tarefas</span>
         <h1 className="text-[34px] leading-10 font-black tracking-[-0.6px]">Ajustes</h1>
       </header>
+      <p className="px-1 text-[15px] leading-snug font-bold text-muted-foreground">
+        Tarefas com horário avisam no horário delas. As notificações valem para Água e Tarefas neste aparelho.
+      </p>
+      <NotificationsCard />
       <section className="flex flex-col rounded-3xl bg-card px-[18px] py-1">
         <button
           type="button"

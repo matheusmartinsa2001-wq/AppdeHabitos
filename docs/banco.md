@@ -8,6 +8,7 @@ PostgreSQL 16 (Neon, plano gratuito, em produção; container do Docker em desen
 
 | Migration | O que faz |
 |---|---|
+| `20261126233900_task_reminder_dispatches` | Tabela `task_reminder_dispatches` (Etapa 15): marca o lembrete de uma tarefa enviado num dia |
 | `20261126232139_task_recurrence` | `tasks.repeatDays` e a tabela `task_repeat_changes` (Etapa 14), com os `CHECK` dos dias (1..127), recorrente sem data e horário com data ou repetição |
 | `20261126223549_tasks` | Cria `tasks` e `task_completions` (Etapa 13), com os `CHECK` em SQL bruto (título não vazio, horário 0..1439, horário só com data) |
 | `20261125130000_refresh_token_hash_unique` | `refresh_tokens.tokenHash` passa a ser único (busca do token pelo hash, Etapa 5) |
@@ -110,7 +111,11 @@ Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa
 - A recorrente começa no dia em que é criada (`createdAt` em Brasília) e para no dia da exclusão (`deletedAt` em Brasília, que já não conta).
 - Regras no banco: `CHECK (repeatDays BETWEEN 1 AND 127)`, `CHECK (repeatDays IS NULL OR dueDate IS NULL)` e o horário passa a valer com data **ou** repetição.
 
+### Módulo Tarefas: lembretes (Etapa 15)
 
+- **`task_reminder_dispatches`**: `taskId`, `day`, `sentAt`. Marca que o lembrete da tarefa saiu num dia; o único (`taskId`, `day`) garante uma notificação só por tarefa por dia, como `water_reminder_dispatches`.
+
+### Valores calculados (não guardados)
 
 - **Total do dia** = soma de `water_intakes.amountMl` do dia.
 - **Quanto falta** = max(0, meta do dia − total do dia).
@@ -130,6 +135,7 @@ Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa
 | Tarefa: título não vazio, horário 0..1439 e só com data | `CHECK` em `tasks` (SQL bruto) |
 | Recorrente: dias 1..127, sem data; horário só com data ou repetição | `CHECK` em `tasks` e `task_repeat_changes` (SQL bruto) |
 | Uma regra de dias por recorrente e dia de vigência | `UNIQUE (taskId, effectiveFrom)` em `task_repeat_changes` |
+| Um lembrete de tarefa por tarefa e dia | `UNIQUE (taskId, day)` em `task_reminder_dispatches` |
 | Uma conclusão por tarefa e dia | `UNIQUE (taskId, day)` em `task_completions` (a avulsa só tem uma: garantido no service) |
 | Uma notificação por lembrete por dia | `UNIQUE (reminderId, day)` em `water_reminder_dispatches` |
 

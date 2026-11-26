@@ -10,31 +10,41 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Public } from '../common/decorators/public.decorator';
-import {
-  DispatchResult,
-  WaterReminderDispatchService,
-} from './water-reminder-dispatch.service';
+import { TaskReminderDispatchService } from '../tasks/task-reminder-dispatch.service';
+import { WaterReminderDispatchService } from '../water/water-reminder-dispatch.service';
+
+export interface JobsDispatchResult {
+  /** Horários dos lembretes de água notificados nesta chamada. */
+  notified: string[];
+  /** "HH:MM título" das tarefas notificadas nesta chamada (Etapa 15). */
+  tasks: string[];
+}
 
 /**
  * Chamado a cada minuto pelo cron externo gratuito (cron-job.org). Fora do login: protegido
  * pelo segredo `CRON_SECRET` no header `X-Cron-Secret`. Ver docs/decisoes.md (Etapa 9).
+ * Desde a Etapa 15, a mesma chamada dispara também os lembretes das tarefas (o endereço
+ * continua o mesmo, para não mexer no cron-job.org).
  */
 @ApiExcludeController()
 @Controller('jobs')
-export class WaterJobsController {
+export class JobsController {
   constructor(
-    private readonly dispatchService: WaterReminderDispatchService,
+    private readonly waterDispatch: WaterReminderDispatchService,
+    private readonly taskDispatch: TaskReminderDispatchService,
     private readonly configService: ConfigService,
   ) {}
 
   @Public()
   @Post('water-reminders')
   @HttpCode(HttpStatus.OK)
-  dispatch(
+  async dispatch(
     @Headers('x-cron-secret') secret: string | undefined,
-  ): Promise<DispatchResult> {
+  ): Promise<JobsDispatchResult> {
     this.ensureCronSecret(secret);
-    return this.dispatchService.dispatchDue();
+    const { notified } = await this.waterDispatch.dispatchDue();
+    const tasks = await this.taskDispatch.dispatchDue();
+    return { notified, tasks };
   }
 
   private ensureCronSecret(received: string | undefined): void {

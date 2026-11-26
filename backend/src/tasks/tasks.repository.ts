@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 
 export interface TaskData {
@@ -81,5 +82,51 @@ export class TasksRepository {
 
   deleteCompletion(id: string) {
     return this.prisma.taskCompletion.delete({ where: { id } });
+  }
+
+  /** Tarefas ativas com horário que ainda podem avisar: recorrentes e avulsas de hoje em diante. */
+  listWithTime(today: Date) {
+    return this.prisma.task.findMany({
+      where: {
+        deletedAt: null,
+        dueMinuteOfDay: { not: null },
+        OR: [{ repeatDays: { not: null } }, { dueDate: { gte: today } }],
+      },
+      select: {
+        id: true,
+        title: true,
+        dueDate: true,
+        dueMinuteOfDay: true,
+        repeatDays: true,
+      },
+    });
+  }
+
+  /** Concluída? Recorrente: no dia dado; avulsa (`day` = null): em qualquer dia. */
+  async isDone(taskId: string, day: Date | null): Promise<boolean> {
+    const completion = await this.prisma.taskCompletion.findFirst({
+      where: day ? { taskId, day } : { taskId },
+      select: { id: true },
+    });
+    return completion !== null;
+  }
+
+  /**
+   * Marca que o lembrete da tarefa saiu hoje. Devolve `false` se já estava marcado
+   * (único taskId+day): duas chamadas do cron ao mesmo tempo nunca enviam duas vezes.
+   */
+  async claimDispatch(taskId: string, day: Date): Promise<boolean> {
+    try {
+      await this.prisma.taskReminderDispatch.create({ data: { taskId, day } });
+      return true;
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        return false;
+      }
+      throw error;
+    }
   }
 }

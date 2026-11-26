@@ -4,6 +4,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Concluído
 
+- [x] **Etapa 15 — Lembretes das tarefas** (2026-11-26): disparo na mesma chamada do cron da Água, `task_reminder_dispatches`, chave de notificações em Ajustes de Tarefas. Aprovada pelo usuário; falta conferir a notificação no iPhone.
 - [x] **Etapa 14 — Tarefas recorrentes** (2026-11-26): `repeatDays` + `task_repeat_changes`, "Repetir" no painel (Todo dia / Alguns dias), ocorrência do dia em Hoje e seção "Recorrentes" em Próximas. Aprovada pelo usuário.
 - [x] **Etapa 13 — Tarefas avulsas** (2026-11-26): tabelas `tasks`/`task_completions`, `/api/tasks`, módulo Tarefas com abas Hoje/Próximas/Atrasadas, criar/editar/excluir, concluir/desfazer. Aprovada pelo usuário.
 - [x] **Etapa 12 — Escolha de módulo** (2026-11-26): tela inicial com Água e Tarefas, Água em `/agua` com "‹ Módulos", notificação abrindo `/agua`. Aprovada pelo usuário.

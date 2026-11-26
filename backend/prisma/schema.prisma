@@ -136,6 +136,7 @@ model Task {
 
   completions   TaskCompletion[]
   repeatChanges TaskRepeatChange[]
+  dispatches    TaskReminderDispatch[]
 
   @@index([dueDate])
   @@map("tasks")
@@ -168,4 +169,17 @@ model TaskRepeatChange {
 
   @@unique([taskId, effectiveFrom])
   @@map("task_repeat_changes")
+}
+
+/// Marca que o lembrete de uma tarefa já saiu num dia (uma notificação só por tarefa por dia).
+model TaskReminderDispatch {
+  id     String   @id @default(uuid()) @db.Uuid
+  taskId String   @db.Uuid
+  day    DateTime @db.Date
+  sentAt DateTime @default(now()) @db.Timestamptz(3)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Restrict)
+
+  @@unique([taskId, day])
+  @@map("task_reminder_dispatches")
 }

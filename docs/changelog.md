@@ -4,6 +4,16 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-26 — Etapa 15: lembretes das tarefas
+
+**Tipo**: Backend + frontend + migration
+
+- A chamada de cada minuto do cron-job.org (`POST /api/jobs/water-reminders`, mesmo endereço) dispara também os lembretes das tarefas com horário: avulsa no dia dela, recorrente nos dias escolhidos, uma vez por dia, até 10 minutos de atraso, e não sai se já foi concluída.
+- `JobsController` saiu do módulo Água para o módulo `jobs`. Tabela `task_reminder_dispatches` (migration `20261126233900_task_reminder_dispatches`) e cache em memória das tarefas com horário.
+- Notificação "Tarefa: <título>" / "às HH:MM"; tocar abre `/tarefas`. Ajustes de Tarefas ganhou a chave de notificações.
+
+---
+
 ## 2026-11-26 — Etapa 14: tarefas recorrentes
 
 **Tipo**: Backend + frontend + migration

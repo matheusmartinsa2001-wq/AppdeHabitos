@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
+import type { TaskReminderCache } from './task-reminder-cache';
 import type { TasksRepository } from './tasks.repository';
 import { TasksService } from './tasks.service';
 
@@ -45,6 +46,7 @@ const doneOn = (value: Date, id = 'c'): Completion[] => [
 describe('TasksService', () => {
   let repository: Record<string, jest.Mock>;
   let service: TasksService;
+  let reminderCache: { invalidate: jest.Mock };
 
   beforeEach(() => {
     repository = {
@@ -56,7 +58,12 @@ describe('TasksService', () => {
       createCompletion: jest.fn().mockResolvedValue({}),
       deleteCompletion: jest.fn().mockResolvedValue({}),
     };
-    service = new TasksService(repository as unknown as TasksRepository, clock);
+    reminderCache = { invalidate: jest.fn() };
+    service = new TasksService(
+      repository as unknown as TasksRepository,
+      clock,
+      reminderCache as unknown as TaskReminderCache,
+    );
   });
 
   describe('getLists', () => {
@@ -323,6 +330,16 @@ describe('TasksService', () => {
       await service.remove('t');
       expect(repository.softDelete).toHaveBeenCalledWith('t');
     });
+  });
+
+  it('criar, editar e excluir renovam o cache dos lembretes; concluir não', async () => {
+    await service.create({ title: 'A' });
+    repository.findActive.mockResolvedValue(task({ id: 't' }));
+    await service.update('t', { title: 'B' });
+    await service.remove('t');
+    expect(reminderCache.invalidate).toHaveBeenCalledTimes(3);
+    await service.complete('t');
+    expect(reminderCache.invalidate).toHaveBeenCalledTimes(3);
   });
 
   describe('complete / undoComplete', () => {

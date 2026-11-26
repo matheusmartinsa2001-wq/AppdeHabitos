@@ -4,7 +4,6 @@ import { PushModule } from '../push/push.module';
 import { ReminderCache } from './reminder-cache';
 import { WaterHistoryController } from './water-history.controller';
 import { WaterHistoryService } from './water-history.service';
-import { WaterJobsController } from './water-jobs.controller';
 import { WaterReminderDispatchService } from './water-reminder-dispatch.service';
 import { WaterTodayController } from './water-today.controller';
 import { WaterTodayService } from './water-today.service';
@@ -14,12 +13,7 @@ import { WaterService } from './water.service';
 
 @Module({
   imports: [PushModule],
-  controllers: [
-    WaterController,
-    WaterTodayController,
-    WaterHistoryController,
-    WaterJobsController,
-  ],
+  controllers: [WaterController, WaterTodayController, WaterHistoryController],
   providers: [
     WaterService,
     WaterTodayService,
@@ -29,5 +23,6 @@ import { WaterService } from './water.service';
     ReminderCache,
     Clock,
   ],
+  exports: [WaterReminderDispatchService],
 })
 export class WaterModule {}

@@ -14,6 +14,7 @@ import {
 import { validateEnvironment } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { JobsModule } from './jobs/jobs.module';
 import { PushModule } from './push/push.module';
 import { TasksModule } from './tasks/tasks.module';
 import { WaterModule } from './water/water.module';
@@ -33,6 +34,7 @@ import { WaterModule } from './water/water.module';
     PushModule,
     WaterModule,
     TasksModule,
+    JobsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: GlobalExceptionFilter },

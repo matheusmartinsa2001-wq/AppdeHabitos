@@ -214,6 +214,10 @@ As respostas de escrita devolvem as três listas atualizadas, como `GET /tasks`.
 - `GET /tasks` ganha `recurring`: todas as recorrentes ativas, para ver e editar. As ocorrências de hoje aparecem em `today`, como as outras tarefas.
 - `complete` / `DELETE complete` de uma recorrente valem para a ocorrência de hoje; `409` se ela não cai hoje.
 
+### Lembretes das tarefas (Etapa 15)
+
+- `POST /jobs/water-reminders` (cron, `X-Cron-Secret`) dispara também os lembretes das tarefas. O endereço não mudou, para não mexer no cron-job.org. Resposta: `{ notified: string[], tasks: string[] }` (`tasks` = "HH:MM título" de cada tarefa avisada).
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

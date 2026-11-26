@@ -10,6 +10,7 @@ import { minuteOfDayToTime, timeToMinuteOfDay } from '../water/water.rules';
 import type { CreateTaskDto } from './dto/create-task.dto';
 import type { TaskDto, TaskListsDto } from './dto/task-lists.dto';
 import type { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskReminderCache } from './task-reminder-cache';
 import { TasksRepository, type TaskData } from './tasks.repository';
 import {
   bitsToWeekdays,
@@ -39,6 +40,7 @@ export class TasksService {
   constructor(
     private readonly repository: TasksRepository,
     private readonly clock: Clock,
+    private readonly reminderCache: TaskReminderCache,
   ) {}
 
   async getLists(): Promise<TaskListsDto> {
@@ -101,6 +103,7 @@ export class TasksService {
       },
       this.today(),
     );
+    this.reminderCache.invalidate();
     return this.getLists();
   }
 
@@ -146,6 +149,7 @@ export class TasksService {
     }
 
     await this.repository.update(id, data, this.today());
+    this.reminderCache.invalidate();
     return this.getLists();
   }
 
@@ -153,6 +157,7 @@ export class TasksService {
   async remove(id: string): Promise<TaskListsDto> {
     await this.findTask(id);
     await this.repository.softDelete(id);
+    this.reminderCache.invalidate();
     return this.getLists();
   }
 

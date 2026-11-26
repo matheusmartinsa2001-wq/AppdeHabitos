@@ -1,3 +1,5 @@
+import { TaskReminderCache } from '../src/tasks/task-reminder-cache';
+import { ReminderCache } from '../src/water/reminder-cache';
 import { brasiliaNow } from '../src/common/utils/brasilia';
 import {
   createTestApp,
@@ -20,8 +22,11 @@ describe('Notificações: inscrições e disparo do cron (e2e)', () => {
 
   beforeEach(async () => {
     await ctx.prisma.$executeRawUnsafe(
-      'TRUNCATE TABLE water_intakes, water_reminder_dispatches, water_reminders, water_goal_changes, push_subscriptions CASCADE',
+      'TRUNCATE TABLE water_intakes, water_reminder_dispatches, water_reminders, water_goal_changes, task_reminder_dispatches, task_completions, task_repeat_changes, tasks, push_subscriptions CASCADE',
     );
+    // As tabelas foram esvaziadas por fora do app: os caches dos lembretes também.
+    ctx.app.get(ReminderCache).invalidate();
+    ctx.app.get(TaskReminderCache).invalidate();
   });
 
   afterAll(async () => {
@@ -102,7 +107,7 @@ describe('Notificações: inscrições e disparo do cron (e2e)', () => {
     it('com o segredo e nada no horário: nada a enviar', async () => {
       await dispatch()
         .set('X-Cron-Secret', E2E_CRON_SECRET)
-        .expect(200, { notified: [] });
+        .expect(200, { notified: [], tasks: [] });
     });
 
     it('lembrete no horário: notifica uma vez só no dia, mesmo com o cron chamando de novo', async () => {
@@ -128,8 +133,50 @@ describe('Notificações: inscrições e disparo do cron (e2e)', () => {
 
       await dispatch()
         .set('X-Cron-Secret', E2E_CRON_SECRET)
-        .expect(200, { notified: [] });
+        .expect(200, { notified: [], tasks: [] });
       expect(await ctx.prisma.waterReminderDispatch.count()).toBe(1);
+    });
+
+    it('tarefa com horário: notifica no dia dela, uma vez só, e não se já concluída', async () => {
+      const now = brasiliaNow();
+      const { minuteOfDay } = now;
+      const time = `${String(Math.floor(minuteOfDay / 60)).padStart(2, '0')}:${String(minuteOfDay % 60).padStart(2, '0')}`;
+      const today = now.today.toISOString().slice(0, 10);
+      await ctx
+        .http()
+        .post('/api/push/subscriptions')
+        .set(session.auth)
+        .send(subscription)
+        .expect(204);
+      await ctx
+        .http()
+        .post('/api/tasks')
+        .set(session.auth)
+        .send({ title: 'Ligar para o banco', date: today, time })
+        .expect(201);
+      const done = await ctx
+        .http()
+        .post('/api/tasks')
+        .set(session.auth)
+        .send({ title: 'Já feita', repeat: [0, 1, 2, 3, 4, 5, 6], time })
+        .expect(201);
+      const doneId = (done.body as { recurring: { id: string }[] }).recurring[0]
+        .id;
+      await ctx
+        .http()
+        .post(`/api/tasks/${doneId}/complete`)
+        .set(session.auth)
+        .expect(200);
+
+      const first = await dispatch()
+        .set('X-Cron-Secret', E2E_CRON_SECRET)
+        .expect(200);
+      expect((first.body as { tasks: string[] }).tasks).toEqual([
+        `${time} Ligar para o banco`,
+      ]);
+      await dispatch()
+        .set('X-Cron-Secret', E2E_CRON_SECRET)
+        .expect(200, { notified: [], tasks: [] });
     });
 
     it('lembrete já marcado como "tomei" antes do horário não é notificado', async () => {
@@ -151,7 +198,7 @@ describe('Notificações: inscrições e disparo do cron (e2e)', () => {
 
       await dispatch()
         .set('X-Cron-Secret', E2E_CRON_SECRET)
-        .expect(200, { notified: [] });
+        .expect(200, { notified: [], tasks: [] });
     });
   });
 });

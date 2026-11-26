@@ -143,7 +143,9 @@ Funções aprovadas pelo usuário em 2026-11-26; regras confirmadas em 2026-11-2
 
 - Só para tarefa com horário. Chega **no horário exato**, sem opção de antecedência (2026-11-26).
 - Uma notificação, sem repetir, com a janela de 10 minutos de atraso da Água. Não é enviada se a tarefa já foi concluída. Tocar nela abre o módulo Tarefas.
-- Usa as notificações já ativadas no aparelho (a mesma inscrição serve para Água e Tarefas).
+- Usa as notificações já ativadas no aparelho (a mesma inscrição serve para Água e Tarefas). Ajustes de Tarefas tem a mesma chave da Água.
+- A notificação diz "Tarefa: <título>" e "às HH:MM". Avulsa avisa só no dia dela; recorrente, nos dias escolhidos; atrasadas e sem data não avisam (2026-11-26).
+- O disparo usa a mesma chamada de cada minuto do cron-job.org da Água (2026-11-26).
 
 ### Histórico
 
