@@ -133,7 +133,9 @@ Funções aprovadas pelo usuário em 2026-11-26; regras confirmadas em 2026-11-2
 
 ### Recorrentes
 
-- Repetem **todo dia** ou em **dias da semana escolhidos**. Outras repetições ficam fora da primeira versão.
+- Repetem **todo dia** ou em **dias da semana escolhidos**. A recorrente não tem data: começa no dia em que é criada e o horário é opcional (2026-11-26).
+- Uma tarefa avulsa não vira recorrente, nem o contrário: para isso, cria-se outra tarefa (2026-11-26).
+- A ocorrência do dia aparece em **Hoje**, marcada com os dias ("Todo dia", "seg · qua · sex"). Todas as recorrentes ficam numa seção "Recorrentes" no fim de **Próximas**, para ver e editar (2026-11-26). Outras repetições ficam fora da primeira versão.
 - Cada dia é uma ocorrência separada. **Não acumula**: a ocorrência não feita fica como "não feita" no histórico daquele dia e não vai para Atrasadas; hoje aparece só a de hoje (2026-11-26).
 - Editar ou excluir uma recorrente vale de hoje em diante. Os dias passados não mudam.
 

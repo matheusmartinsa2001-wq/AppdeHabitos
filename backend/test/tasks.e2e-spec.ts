@@ -12,6 +12,7 @@ interface Task {
   title: string;
   date: string | null;
   time: string | null;
+  repeat: number[] | null;
   done: boolean;
 }
 interface Lists {
@@ -19,6 +20,7 @@ interface Lists {
   today: Task[];
   upcoming: Task[];
   overdue: Task[];
+  recurring: Task[];
 }
 
 const addDays = (value: string, days: number) => {
@@ -40,7 +42,7 @@ describe('Tarefas (e2e)', () => {
 
   beforeEach(async () => {
     await ctx.prisma.$executeRawUnsafe(
-      'TRUNCATE TABLE task_completions, tasks CASCADE',
+      'TRUNCATE TABLE task_completions, task_repeat_changes, tasks CASCADE',
     );
   });
 
@@ -193,6 +195,95 @@ describe('Tarefas (e2e)', () => {
       .delete(`/api/tasks/${task.id}/complete`)
       .set(session.auth)
       .expect(409);
+  });
+
+  it('recorrente: aparece hoje, conclui a ocorrência e guarda a regra dos dias', async () => {
+    const todayWeekday = new Date(`${today}T00:00:00Z`).getUTCDay();
+    const otherWeekday = (todayWeekday + 1) % 7;
+    const created = await create({
+      title: 'Academia',
+      repeat: [todayWeekday],
+      time: '06:00',
+    });
+    const [rec] = created.recurring;
+    expect(rec).toMatchObject({
+      title: 'Academia',
+      date: null,
+      time: '06:00',
+      repeat: [todayWeekday],
+    });
+    expect(created.today.map((t) => t.id)).toEqual([rec.id]);
+
+    const done = (
+      await ctx
+        .http()
+        .post(`/api/tasks/${rec.id}/complete`)
+        .set(session.auth)
+        .expect(200)
+    ).body as Lists;
+    expect(done.today[0]).toMatchObject({ id: rec.id, done: true });
+    await ctx
+      .http()
+      .post(`/api/tasks/${rec.id}/complete`)
+      .set(session.auth)
+      .expect(409);
+    await ctx
+      .http()
+      .delete(`/api/tasks/${rec.id}/complete`)
+      .set(session.auth)
+      .expect(200);
+
+    // Muda os dias: sai de Hoje, a regra de hoje é regravada.
+    const moved = (
+      await ctx
+        .http()
+        .patch(`/api/tasks/${rec.id}`)
+        .set(session.auth)
+        .send({ repeat: [otherWeekday] })
+        .expect(200)
+    ).body as Lists;
+    expect(moved.today).toEqual([]);
+    expect(moved.recurring[0].repeat).toEqual([otherWeekday]);
+    const changes = await ctx.prisma.taskRepeatChange.findMany({
+      where: { taskId: rec.id },
+    });
+    expect(changes).toHaveLength(1);
+    expect(changes[0].repeatDays).toBe(1 << otherWeekday);
+
+    await ctx
+      .http()
+      .post(`/api/tasks/${rec.id}/complete`)
+      .set(session.auth)
+      .expect(409);
+  });
+
+  it('recorrente: sem data, e não troca de tipo', async () => {
+    await ctx
+      .http()
+      .post('/api/tasks')
+      .set(session.auth)
+      .send({ title: 'X', repeat: [1], date: today })
+      .expect(400);
+    await ctx
+      .http()
+      .post('/api/tasks')
+      .set(session.auth)
+      .send({ title: 'X', repeat: [] })
+      .expect(400);
+    await ctx
+      .http()
+      .post('/api/tasks')
+      .set(session.auth)
+      .send({ title: 'X', repeat: [7] })
+      .expect(400);
+
+    const [avulsa] = (await create({ title: 'Avulsa' })).today;
+    await ctx
+      .http()
+      .patch(`/api/tasks/${avulsa.id}`)
+      .set(session.auth)
+      .send({ repeat: [1] })
+      .expect(400);
   });
 
   it('id inválido: 400', async () => {

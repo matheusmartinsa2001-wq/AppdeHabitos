@@ -12,3 +12,20 @@ export function parseDay(value: string): Date | null {
     ? null
     : day;
 }
+
+/**
+ * Dias de uma recorrente, guardados como bits: domingo (0) = 1, segunda (1) = 2 …
+ * sábado (6) = 64. Todo dia = 127.
+ */
+export function weekdaysToBits(weekdays: number[]): number {
+  return weekdays.reduce((bits, weekday) => bits | (1 << weekday), 0);
+}
+
+export function bitsToWeekdays(bits: number): number[] {
+  return [0, 1, 2, 3, 4, 5, 6].filter((weekday) => bits & (1 << weekday));
+}
+
+/** A recorrente cai neste dia (coluna `date`, meia-noite UTC do dia de Brasília)? */
+export function repeatsOn(bits: number, day: Date): boolean {
+  return (bits & (1 << day.getUTCDay())) !== 0;
+}

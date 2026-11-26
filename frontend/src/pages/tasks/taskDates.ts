@@ -22,3 +22,14 @@ export function formatTaskDate(date: string, today: string): string {
   if (date === addDays(today, -1)) return 'Ontem'
   return shortDate.format(new Date(`${date}T00:00:00Z`))
 }
+
+/** Dias da semana, 0 = domingo (mesma numeração da API). */
+export const WEEKDAY_NAMES = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado']
+export const WEEKDAY_INITIALS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
+const WEEKDAY_SHORT = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
+
+/** [1, 3, 5] → "seg · qua · sex"; todos → "Todo dia". */
+export function formatRepeat(repeat: number[]): string {
+  if (repeat.length === 7) return 'Todo dia'
+  return repeat.map((weekday) => WEEKDAY_SHORT[weekday]).join(' · ')
+}

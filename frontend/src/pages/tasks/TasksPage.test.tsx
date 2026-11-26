@@ -21,6 +21,7 @@ const task = (overrides: Partial<Task>): Task => ({
   title: 'Tarefa',
   date: null,
   time: null,
+  repeat: null,
   done: false,
   ...overrides,
 })
@@ -35,6 +36,7 @@ function lists(overrides: Partial<TaskLists> = {}): TaskLists {
     ],
     upcoming: [task({ id: 'd', title: 'Dentista', date: '2026-11-27', time: '09:00' })],
     overdue: [task({ id: 'e', title: 'Pagar a luz', date: '2026-11-20' })],
+    recurring: [task({ id: 'r', title: 'Academia', time: '06:00', repeat: [1, 3, 5] })],
     ...overrides,
   }
 }
@@ -105,8 +107,45 @@ describe('TasksPage', () => {
     await user.type(within(dialog).getByLabelText('Horário'), '08:30')
     await user.click(within(dialog).getByRole('button', { name: 'Criar tarefa' }))
 
-    expect(service.createTask).toHaveBeenCalledWith({ title: 'Mercado', date: '2026-11-27', time: '08:30' })
+    expect(service.createTask).toHaveBeenCalledWith({ title: 'Mercado', date: '2026-11-27', time: '08:30', repeat: null })
     expect(await screen.findByText('Tarefa criada')).toBeInTheDocument()
+  })
+
+  it('Próximas mostra a seção Recorrentes, que abre a edição sem trocar o tipo', async () => {
+    service.getTaskLists.mockResolvedValue(lists())
+    service.updateTask.mockResolvedValue(lists())
+    const { user } = renderWithProviders(<TasksPage />, { route: '/tarefas?lista=proximas' })
+
+    const section = await screen.findByRole('list', { name: 'Recorrentes' })
+    expect(within(section).getByText('seg · qua · sex · 06:00')).toBeInTheDocument()
+    expect(within(section).queryByRole('checkbox')).not.toBeInTheDocument()
+
+    await user.click(within(section).getByText('Academia'))
+    const dialog = screen.getByRole('dialog', { name: 'Editar tarefa' })
+    expect(within(dialog).queryByRole('button', { name: 'Não repete' })).not.toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'sexta' })).toHaveAttribute('aria-pressed', 'true')
+    await user.click(within(dialog).getByRole('button', { name: 'sábado' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Salvar tarefa' }))
+    expect(service.updateTask).toHaveBeenCalledWith('r', { repeat: [1, 3, 5, 6] })
+  })
+
+  it('cria uma recorrente em dias da semana', async () => {
+    service.getTaskLists.mockResolvedValue(lists())
+    service.createTask.mockResolvedValue(lists())
+    const { user } = renderWithProviders(<TasksPage />, { route: '/tarefas' })
+
+    await user.click(await screen.findByRole('button', { name: /Nova tarefa/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Nova tarefa' })
+    await user.type(within(dialog).getByPlaceholderText(/pagar a conta/), 'Inglês')
+    await user.click(within(dialog).getByRole('button', { name: 'Alguns dias' }))
+    expect(within(dialog).queryByRole('button', { name: 'Amanhã' })).not.toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: 'Criar tarefa' }))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent('Escolha pelo menos um dia da semana')
+
+    await user.click(within(dialog).getByRole('button', { name: 'terça' }))
+    await user.click(within(dialog).getByRole('button', { name: 'quinta' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Criar tarefa' }))
+    expect(service.createTask).toHaveBeenCalledWith({ title: 'Inglês', date: null, time: null, repeat: [2, 4] })
   })
 
   it('título vazio não é enviado', async () => {

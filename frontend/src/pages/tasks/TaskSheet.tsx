@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Task, TaskInput } from '@/types/tasks'
 import { extractErrorMessage } from '@/utils/errors'
-import { addDays, formatTaskDate, TASK_TITLE_MAX } from './taskDates'
+import { addDays, formatTaskDate, TASK_TITLE_MAX, WEEKDAY_INITIALS, WEEKDAY_NAMES } from './taskDates'
 
 interface TaskSheetProps {
   open: boolean
@@ -50,6 +50,9 @@ export function TaskSheet({ open, sessionKey, ...formProps }: TaskSheetProps) {
 
 type SheetFormProps = Omit<TaskSheetProps, 'open' | 'sessionKey'>
 type DateChoice = 'none' | 'today' | 'tomorrow' | 'other'
+type RepeatMode = 'none' | 'daily' | 'week'
+
+const EVERY_DAY = [0, 1, 2, 3, 4, 5, 6]
 
 function initialChoice(date: string | null, today: string): DateChoice {
   if (!date) return 'none'
@@ -63,14 +66,22 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
   const [choice, setChoice] = useState<DateChoice>(() => initialChoice(task?.date ?? null, today))
   const [otherDate, setOtherDate] = useState(task?.date && task.date > addDays(today, 1) ? task.date : '')
   const [time, setTime] = useState(task?.time ?? '')
+  const [repeatMode, setRepeatMode] = useState<RepeatMode>(() =>
+    !task?.repeat ? 'none' : task.repeat.length === 7 ? 'daily' : 'week',
+  )
+  const [weekdays, setWeekdays] = useState<number[]>(task?.repeat ?? [])
+  const recurring = repeatMode !== 'none'
+  // Avulsa não vira recorrente, nem o contrário: o tipo só é escolhido ao criar.
+  const repeatOptions: RepeatMode[] = !task ? ['none', 'daily', 'week'] : task.repeat ? ['daily', 'week'] : []
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [busy, setBusy] = useState(false)
 
   // Atrasada sendo editada: a data antiga fica até ser trocada (não se remarca para o passado).
   const keepsPastDate = task?.date != null && task.date < today && choice === 'other' && !otherDate
-  const date =
-    choice === 'today'
+  const date = recurring
+    ? null
+    : choice === 'today'
       ? today
       : choice === 'tomorrow'
         ? addDays(today, 1)
@@ -86,11 +97,21 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
     setError(null)
   }
 
+  const toggleWeekday = (weekday: number) => {
+    setWeekdays((current) =>
+      current.includes(weekday) ? current.filter((d) => d !== weekday) : [...current, weekday].sort((a, b) => a - b),
+    )
+    setError(null)
+  }
+
   const save = async () => {
     const trimmed = title.trim()
+    const repeat = repeatMode === 'daily' ? EVERY_DAY : repeatMode === 'week' ? weekdays : null
     const problem = !trimmed
       ? 'Digite o título da tarefa'
-      : choice === 'other' && !date
+      : repeatMode === 'week' && weekdays.length === 0
+        ? 'Escolha pelo menos um dia da semana'
+      : !recurring && choice === 'other' && !date
         ? 'Escolha a data'
         : date && !keepsPastDate && date < today
           ? 'A data não pode ser antes de hoje'
@@ -101,12 +122,12 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
       setError(problem)
       return
     }
-    const input: TaskInput = { title: trimmed, date, time: date && time ? time : null }
+    const input: TaskInput = { title: trimmed, date, time: (date || recurring) && time ? time : null, repeat }
     // Na edição, manda só o que mudou (uma atrasada pode mudar o título sem remarcar).
     const changes: Partial<TaskInput> = task
       ? Object.fromEntries(
           (Object.keys(input) as (keyof TaskInput)[])
-            .filter((key) => input[key] !== task[key])
+            .filter((key) => JSON.stringify(input[key]) !== JSON.stringify(task[key]))
             .map((key) => [key, input[key]]),
         )
       : input
@@ -160,6 +181,66 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
         />
       </label>
 
+      {repeatOptions.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-extrabold text-ink-2">Repetir</span>
+          <div role="group" aria-label="Repetir" className={`grid gap-1.5 ${repeatOptions.length === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+            {repeatOptions.map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={repeatMode === mode}
+                onClick={() => {
+                  setRepeatMode(mode)
+                  setError(null)
+                }}
+                className={chip(repeatMode === mode)}
+              >
+                {mode === 'none' ? 'Não repete' : mode === 'daily' ? 'Todo dia' : 'Alguns dias'}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {repeatMode === 'week' && (
+        <div role="group" aria-label="Dias da semana" className="grid grid-cols-7 gap-1">
+          {EVERY_DAY.map((weekday) => (
+            <button
+              key={weekday}
+              type="button"
+              aria-pressed={weekdays.includes(weekday)}
+              aria-label={WEEKDAY_NAMES[weekday]}
+              onClick={() => toggleWeekday(weekday)}
+              className={`h-11 rounded-full text-[15px] font-black ${weekdays.includes(weekday) ? 'bg-primary text-primary-foreground' : 'bg-muted text-ink-2'}`}
+            >
+              {WEEKDAY_INITIALS[weekday]}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {recurring && (
+        <div className="grid grid-cols-[minmax(0,1fr)_7.5rem] gap-2.5">
+          <div className="flex min-w-0 flex-col justify-end pb-3.5 text-[15px] font-bold text-muted-foreground">
+            Horário é opcional
+          </div>
+          <label className="flex min-w-0 flex-col gap-1.5">
+            <span className="text-[13px] font-extrabold text-ink-2">Horário</span>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => {
+                setTime(e.target.value)
+                setError(null)
+              }}
+              className={`${field} block appearance-none px-2.5 text-left [&::-webkit-date-and-time-value]:text-left`}
+            />
+          </label>
+        </div>
+      )}
+
+      {!recurring && (
       <div className="flex flex-col gap-1.5">
         <span className="text-[13px] font-extrabold text-ink-2">Quando</span>
         <div role="group" aria-label="Quando" className="grid grid-cols-4 gap-1.5">
@@ -177,8 +258,9 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
           </button>
         </div>
       </div>
+      )}
 
-      {choice !== 'none' && (
+      {!recurring && choice !== 'none' && (
         <div className="grid grid-cols-[minmax(0,1fr)_7.5rem] gap-2.5">
           {choice === 'other' ? (
             <label className="flex min-w-0 flex-col gap-1.5">
@@ -215,13 +297,17 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
           </label>
         </div>
       )}
-      {choice !== 'none' && time && (
+      {(recurring || choice !== 'none') && time && (
         <button type="button" onClick={() => setTime('')} className="-mt-2 h-9 self-end text-sm font-extrabold text-primary">
           Tirar horário
         </button>
       )}
       <span className="text-[13px] font-bold text-muted-foreground">
-        {choice === 'none' ? 'Sem data, a tarefa fica em Hoje até você concluir.' : 'Com horário, ela fica destacada em Hoje quando a hora passar.'}
+        {recurring
+          ? 'Aparece em Hoje nos dias escolhidos, a partir de hoje.'
+          : choice === 'none'
+            ? 'Sem data, a tarefa fica em Hoje até você concluir.'
+            : 'Com horário, ela fica destacada em Hoje quando a hora passar.'}
       </span>
 
       {error && (
@@ -249,7 +335,9 @@ function SheetForm({ task, today, onClose, onSave, onDelete }: SheetFormProps) {
         <div className="flex flex-col gap-2.5 rounded-[18px] bg-destructive-soft p-4">
           <span className="text-base font-black text-destructive-ink">Excluir “{task?.title}”?</span>
           <span className="text-sm leading-snug font-bold text-destructive-ink">
-            Se ela já foi concluída, a conclusão continua no histórico.
+            {task?.repeat
+              ? 'Ela para de aparecer a partir de hoje. Os dias anteriores continuam no histórico.'
+              : 'Se ela já foi concluída, a conclusão continua no histórico.'}
           </span>
           <div className="flex gap-2">
             <button

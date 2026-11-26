@@ -38,7 +38,7 @@ Divisão proposta (2026-11-26), aprovada em 2026-11-26:
 
 - ✔ Etapa 12 — Escolha de módulo (aprovada em 2026-11-26): tela inicial com Água e Tarefas, Água movida para `/agua` sem outra mudança, botão "‹ Módulos", notificação da Água abrindo `/agua`. Só frontend + o endereço da notificação.
 - ✔ Etapa 13 — Tarefas avulsas (aprovada em 2026-11-26): banco, criar/editar/excluir, concluir/desfazer, telas Hoje, Próximas e Atrasadas.
-- ○ Etapa 14 — Tarefas recorrentes (todo dia ou dias da semana), uma ocorrência por dia.
+- ✔ Etapa 14 — Tarefas recorrentes (aprovada em 2026-11-26) (todo dia ou dias da semana), uma ocorrência por dia.
 - ○ Etapa 15 — Lembretes das tarefas no cron-job.org já existente.
 - ○ Etapa 16 — Histórico de Tarefas: calendário verde/vermelho com concluídas por dia, sequência e percentual.
 

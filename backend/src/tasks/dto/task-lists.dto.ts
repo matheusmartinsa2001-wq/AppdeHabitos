@@ -21,7 +21,19 @@ export class TaskDto {
   })
   time: string | null;
 
-  @ApiProperty({ description: 'Concluída (nas listas, só as concluídas hoje)' })
+  @ApiPropertyOptional({
+    nullable: true,
+    type: [Number],
+    example: [1, 3, 5],
+    description:
+      'Recorrente: dias da semana, 0 (domingo) a 6 (sábado); null = avulsa',
+  })
+  repeat: number[] | null;
+
+  @ApiProperty({
+    description:
+      'Concluída hoje (recorrente: a ocorrência de hoje; avulsa: só aparecem as concluídas hoje)',
+  })
   done: boolean;
 }
 
@@ -47,4 +59,10 @@ export class TaskListsDto {
     description: 'Data antes de hoje, não concluídas, por data e horário',
   })
   overdue: TaskDto[];
+
+  @ApiProperty({
+    type: [TaskDto],
+    description: 'Todas as recorrentes ativas, por horário, para ver e editar',
+  })
+  recurring: TaskDto[];
 }

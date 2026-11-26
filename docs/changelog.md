@@ -4,6 +4,17 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-26 — Etapa 14: tarefas recorrentes
+
+**Tipo**: Backend + frontend + migration
+
+- Banco: `tasks.repeatDays` (dias da semana em bits) e `task_repeat_changes` (regra dos dias por dia de vigência, para o histórico), migration `20261126232139_task_recurrence`.
+- API: `repeat` ao criar e editar (recorrente sem data; avulsa não vira recorrente nem o contrário), `repeat` em cada tarefa e a lista `recurring`. Concluir e desfazer valem para a ocorrência de hoje.
+- Tela: "Repetir" no painel (Não repete / Todo dia / Alguns dias com os 7 dias), ocorrência do dia em Hoje com os dias ("qui · sex · 06:00") e seção "Recorrentes" no fim de Próximas.
+- Hoje passa a ser ordenado só por horário (sem horário no fim), juntando avulsas e recorrentes.
+
+---
+
 ## 2026-11-26 — Etapa 13: tarefas avulsas
 
 **Tipo**: Backend + frontend + migration

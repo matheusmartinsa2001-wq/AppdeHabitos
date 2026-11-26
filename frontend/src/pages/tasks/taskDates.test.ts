@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, formatTaskDate } from './taskDates'
+import { addDays, formatRepeat, formatTaskDate } from './taskDates'
 
 describe('taskDates', () => {
   it('soma dias atravessando o mês', () => {
@@ -12,5 +12,10 @@ describe('taskDates', () => {
     expect(formatTaskDate('2026-11-27', '2026-11-26')).toBe('Amanhã')
     expect(formatTaskDate('2026-11-25', '2026-11-26')).toBe('Ontem')
     expect(formatTaskDate('2026-11-28', '2026-11-26')).toMatch(/sáb.*28.*nov/)
+  })
+
+  it('dias de uma recorrente', () => {
+    expect(formatRepeat([0, 1, 2, 3, 4, 5, 6])).toBe('Todo dia')
+    expect(formatRepeat([1, 3, 5])).toBe('seg · qua · sex')
   })
 })

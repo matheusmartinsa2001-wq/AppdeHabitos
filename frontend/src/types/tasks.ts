@@ -6,7 +6,9 @@ export interface Task {
   date: string | null
   /** "HH:MM" em Brasília; null = sem horário. */
   time: string | null
-  /** Nas listas, só aparecem as concluídas hoje. */
+  /** Recorrente: dias da semana, 0 (domingo) a 6 (sábado); null = avulsa. */
+  repeat: number[] | null
+  /** Concluída hoje (recorrente: a ocorrência de hoje). */
   done: boolean
 }
 
@@ -16,10 +18,14 @@ export interface TaskLists {
   today: Task[]
   upcoming: Task[]
   overdue: Task[]
+  /** Todas as recorrentes ativas, para ver e editar. */
+  recurring: Task[]
 }
 
 export interface TaskInput {
   title: string
   date: string | null
   time: string | null
+  /** null = avulsa. */
+  repeat: number[] | null
 }

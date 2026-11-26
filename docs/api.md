@@ -207,6 +207,13 @@ Fica fora do Swagger. O cron chama o Render direto (`https://appdehabitos.onrend
 
 As respostas de escrita devolvem as três listas atualizadas, como `GET /tasks`.
 
+### Recorrentes (Etapa 14)
+
+- `POST /tasks` e `PATCH /tasks/:id` aceitam `repeat`: `null` (avulsa) ou uma lista de dias da semana, `0` (domingo) a `6` (sábado). Com `repeat`, `date` precisa ser `null`; `time` é opcional.
+- Cada tarefa da resposta ganha `repeat` (`number[]` ou `null`).
+- `GET /tasks` ganha `recurring`: todas as recorrentes ativas, para ver e editar. As ocorrências de hoje aparecem em `today`, como as outras tarefas.
+- `complete` / `DELETE complete` de uma recorrente valem para a ocorrência de hoje; `409` se ela não cai hoje.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

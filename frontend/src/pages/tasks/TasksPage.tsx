@@ -8,12 +8,12 @@ import type { Task, TaskInput, TaskLists } from '@/types/tasks'
 import { brasiliaMinuteOfDay, timeToMinute } from '@/utils/clock'
 import { extractErrorMessage } from '@/utils/errors'
 import { formatDayLong } from '@/utils/format'
-import { formatTaskDate } from './taskDates'
+import { formatRepeat, formatTaskDate } from './taskDates'
 import { TaskSheet } from './TaskSheet'
 
 type ListKey = 'hoje' | 'proximas' | 'atrasadas'
 
-const LISTS: { key: ListKey; label: string; field: keyof Omit<TaskLists, 'day'>; empty: string }[] = [
+const LISTS: { key: ListKey; label: string; field: 'today' | 'upcoming' | 'overdue'; empty: string }[] = [
   { key: 'hoje', label: 'Hoje', field: 'today', empty: 'Nada para hoje. Toque em “Nova tarefa” para criar.' },
   { key: 'proximas', label: 'Próximas', field: 'upcoming', empty: 'Nenhuma tarefa com data futura.' },
   { key: 'atrasadas', label: 'Atrasadas', field: 'overdue', empty: 'Nenhuma tarefa atrasada.' },
@@ -177,7 +177,7 @@ export function TasksPage() {
               task={task}
               today={lists.day}
               nowMinute={nowMinute}
-              showDate={current.key !== 'hoje'}
+              inToday={current.key === 'hoje'}
               divider={index > 0}
               busy={busyId === task.id}
               onToggle={() => toggle(task)}
@@ -185,6 +185,26 @@ export function TasksPage() {
             />
           ))}
         </ul>
+      )}
+
+      {current.key === 'proximas' && lists.recurring.length > 0 && (
+        <section className="flex flex-col gap-2.5">
+          <h2 className="px-1 text-[22px] font-black tracking-[-0.3px]">Recorrentes</h2>
+          <ul aria-label="Recorrentes" className="flex flex-col rounded-3xl bg-card px-2">
+            {lists.recurring.map((task, index) => (
+              <TaskRow
+                key={task.id}
+                task={task}
+                today={lists.day}
+                nowMinute={nowMinute}
+                inToday={false}
+                divider={index > 0}
+                busy={false}
+                onOpen={() => openSheet(task)}
+              />
+            ))}
+          </ul>
+        </section>
       )}
 
       <TaskSheet
@@ -204,20 +224,29 @@ interface TaskRowProps {
   task: Task
   today: string
   nowMinute: number
-  showDate: boolean
+  /** Na aba Hoje: sem a data e com o horário vencido destacado. */
+  inToday: boolean
   divider: boolean
   busy: boolean
-  onToggle: () => void
+  /** Sem ele (lista de Recorrentes), a linha só abre a edição. */
+  onToggle?: () => void
   onOpen: () => void
 }
 
-function TaskRow({ task, today, nowMinute, showDate, divider, busy, onToggle, onOpen }: TaskRowProps) {
-  // Em Hoje, a tarefa de hoje com horário vencido fica destacada (só vira atrasada amanhã).
-  const late = !task.done && task.date === today && task.time !== null && timeToMinute(task.time) < nowMinute
-  const meta = [showDate && task.date ? formatTaskDate(task.date, today) : null, task.time].filter(Boolean).join(' · ')
+function TaskRow({ task, today, nowMinute, inToday, divider, busy, onToggle, onOpen }: TaskRowProps) {
+  // Em Hoje, a tarefa com horário vencido fica destacada (avulsa só vira atrasada amanhã).
+  const late = inToday && !task.done && task.time !== null && timeToMinute(task.time) < nowMinute
+  const meta = [
+    task.repeat ? formatRepeat(task.repeat) : null,
+    !inToday && task.date ? formatTaskDate(task.date, today) : null,
+    task.time,
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <li className={`flex min-h-16 items-center gap-1 ${divider ? 'border-t border-line' : ''}`}>
+      {onToggle ? (
       <button
         type="button"
         role="checkbox"
@@ -233,9 +262,14 @@ function TaskRow({ task, today, nowMinute, showDate, divider, busy, onToggle, on
           {task.done ? '✓' : ''}
         </span>
       </button>
+      ) : (
+        <span aria-hidden className="flex size-12 flex-none items-center justify-center text-[22px] font-black text-primary">
+          ↻
+        </span>
+      )}
       <button type="button" onClick={onOpen} className="flex min-h-16 min-w-0 flex-1 flex-col justify-center py-2 pr-3 text-left">
         <span
-          className={`text-[17px] leading-snug font-extrabold break-words ${task.done ? 'text-subtle line-through' : 'text-foreground'}`}
+          className={`text-[17px] leading-snug font-extrabold break-words ${task.done && onToggle ? 'text-subtle line-through' : 'text-foreground'}`}
         >
           {task.title}
         </span>

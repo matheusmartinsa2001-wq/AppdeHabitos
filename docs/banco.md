@@ -8,6 +8,7 @@ PostgreSQL 16 (Neon, plano gratuito, em produção; container do Docker em desen
 
 | Migration | O que faz |
 |---|---|
+| `20261126232139_task_recurrence` | `tasks.repeatDays` e a tabela `task_repeat_changes` (Etapa 14), com os `CHECK` dos dias (1..127), recorrente sem data e horário com data ou repetição |
 | `20261126223549_tasks` | Cria `tasks` e `task_completions` (Etapa 13), com os `CHECK` em SQL bruto (título não vazio, horário 0..1439, horário só com data) |
 | `20261125130000_refresh_token_hash_unique` | `refresh_tokens.tokenHash` passa a ser único (busca do token pelo hash, Etapa 5) |
 | `20261125120000_init` | Cria as 7 tabelas, o enum `WaterIntakeSource`, as FKs e, em SQL bruto, os `CHECK` (valores positivos, horário 0..1439, `source` × `reminderId`) e os índices únicos parciais (lembrete ativo por horário; confirmação por lembrete e dia) |
@@ -101,7 +102,15 @@ Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa
 - Regras no banco: `CHECK (dueMinuteOfDay BETWEEN 0 AND 1439)`, `CHECK (dueMinuteOfDay IS NULL OR dueDate IS NOT NULL)`, `CHECK (char_length(trim(title)) BETWEEN 1 AND 120)`.
 - Calculado, sem guardar: **Hoje** = sem data ou com data de hoje, não concluídas, mais as concluídas hoje (riscadas). **Próximas** = data futura, não concluídas. **Atrasadas** = data antes de hoje e não concluídas.
 
-### Valores calculados (não guardados)
+### Módulo Tarefas: recorrentes (Etapa 14, aprovada em 2026-11-26)
+
+- **`tasks.repeatDays`** smallint nulo: dias da semana em que a tarefa se repete, como soma de bits (domingo = 1, segunda = 2 … sábado = 64; todo dia = 127). Nulo = avulsa. Recorrente não tem `dueDate`; o horário (`dueMinuteOfDay`) é opcional e vale para todas as ocorrências.
+- **`task_repeat_changes`**: `taskId`, `effectiveFrom` date, `repeatDays`. Histórico dos dias da semana, como a meta da Água: os dias de uma recorrente no dia D são os da linha com o maior `effectiveFrom` ≤ D. Único por (`taskId`, `effectiveFrom`). Mudar os dias cria ou atualiza a linha de hoje, então os dias passados continuam com a regra que valia neles (o histórico da Etapa 16 usa isso).
+- **Ocorrência** não é guardada: é calculada pelo dia da semana. A conclusão de uma ocorrência é uma linha em `task_completions` com `day` = o dia dela (o único por tarefa e dia já existe).
+- A recorrente começa no dia em que é criada (`createdAt` em Brasília) e para no dia da exclusão (`deletedAt` em Brasília, que já não conta).
+- Regras no banco: `CHECK (repeatDays BETWEEN 1 AND 127)`, `CHECK (repeatDays IS NULL OR dueDate IS NULL)` e o horário passa a valer com data **ou** repetição.
+
+
 
 - **Total do dia** = soma de `water_intakes.amountMl` do dia.
 - **Quanto falta** = max(0, meta do dia − total do dia).
@@ -119,6 +128,8 @@ Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa
 | Lembrete confirmado uma vez por dia | índice único parcial em (`day`, `reminderId`) `WHERE reminderId IS NOT NULL` (SQL bruto) |
 | `source` coerente com `reminderId` | `CHECK` na migration |
 | Tarefa: título não vazio, horário 0..1439 e só com data | `CHECK` em `tasks` (SQL bruto) |
+| Recorrente: dias 1..127, sem data; horário só com data ou repetição | `CHECK` em `tasks` e `task_repeat_changes` (SQL bruto) |
+| Uma regra de dias por recorrente e dia de vigência | `UNIQUE (taskId, effectiveFrom)` em `task_repeat_changes` |
 | Uma conclusão por tarefa e dia | `UNIQUE (taskId, day)` em `task_completions` (a avulsa só tem uma: garantido no service) |
 | Uma notificação por lembrete por dia | `UNIQUE (reminderId, day)` em `water_reminder_dispatches` |
 

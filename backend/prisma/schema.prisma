@@ -128,11 +128,14 @@ model Task {
   dueDate        DateTime? @db.Date
   /// Minuto do dia em Brasília (0..1439); só com dueDate.
   dueMinuteOfDay Int?
+  /// Recorrente: dias da semana como bits (domingo = 1 … sábado = 64; todo dia = 127). Null = avulsa.
+  repeatDays     Int?      @db.SmallInt
   deletedAt      DateTime? @db.Timestamptz(3)
   createdAt      DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
 
-  completions TaskCompletion[]
+  completions   TaskCompletion[]
+  repeatChanges TaskRepeatChange[]
 
   @@index([dueDate])
   @@map("tasks")
@@ -151,4 +154,18 @@ model TaskCompletion {
   @@unique([taskId, day])
   @@index([day])
   @@map("task_completions")
+}
+
+/// Histórico dos dias de uma recorrente: os dias valem a partir de effectiveFrom (Brasília).
+model TaskRepeatChange {
+  id            String   @id @default(uuid()) @db.Uuid
+  taskId        String   @db.Uuid
+  effectiveFrom DateTime @db.Date
+  repeatDays    Int      @db.SmallInt
+  createdAt     DateTime @default(now()) @db.Timestamptz(3)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Restrict)
+
+  @@unique([taskId, effectiveFrom])
+  @@map("task_repeat_changes")
 }
