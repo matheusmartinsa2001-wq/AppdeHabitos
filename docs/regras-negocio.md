@@ -151,7 +151,9 @@ Funções aprovadas pelo usuário em 2026-11-26; regras confirmadas em 2026-11-2
 
 - Calendário do mês no visual do Histórico da Água, com o número de tarefas concluídas em cada dia (2026-11-26).
 - O dia fica **verde** quando tudo o que era daquele dia foi feito e **vermelho** quando faltou algo. Hoje fica neutro até a meia-noite, como na Água (2026-11-26).
-- "O que era daquele dia": as recorrentes que caíam no dia e as avulsas com data naquele dia. Dia sem nenhuma tarefa fica cinza e não entra na sequência nem no percentual.
+- "O que era daquele dia": as recorrentes que caíam no dia (pela regra de dias que valia na época) e as avulsas com data naquele dia; as sem data não entram. Dia sem nenhuma tarefa fica cinza e não entra na sequência nem no percentual.
+- A avulsa conta como feita no dia se foi concluída até aquele dia; concluída depois, o dia fica vermelho (2026-11-26).
+- O número de concluídas do dia conta todas as tarefas, inclusive as sem data. O calendário começa na primeira tarefa criada, e tocar num dia mostra o que era dele, feito ou não (2026-11-26).
 - **Sequência** e **percentual do mês** com as mesmas regras da Água (2026-11-26).
 
 ## Outros hábitos

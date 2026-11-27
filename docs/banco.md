@@ -117,6 +117,8 @@ Só as tarefas avulsas. As recorrentes (Etapa 14) e o envio dos lembretes (Etapa
 
 ### Valores calculados (não guardados)
 
+- **Histórico de Tarefas** (Etapa 16): calculado a partir de `tasks` (inclusive excluídas), `task_completions` e `task_repeat_changes`, sem tabela de resumo. Limitação conhecida: a avulsa guarda só a data atual, então remarcar uma atrasada muda o dia em que ela conta.
+
 - **Total do dia** = soma de `water_intakes.amountMl` do dia.
 - **Quanto falta** = max(0, meta do dia − total do dia).
 - **Meta batida** = total ≥ meta do dia.

@@ -4,6 +4,15 @@ Registro resumido de cada entrega. Mais recente no topo.
 
 ---
 
+## 2026-11-26 — Etapa 16: histórico de Tarefas
+
+**Tipo**: Backend + frontend
+
+- `GET /api/tasks/history?month=`: cada dia avaliado pelo que era dele (recorrentes pela regra da época e avulsas com a data), verde/vermelho/cinza, concluídas por dia, sequência (dias sem tarefa não quebram) e percentual do mês.
+- Tela Histórico de Tarefas no visual do Histórico da Água, com ✓ de concluídas em cada dia e o detalhe do dia ao tocar.
+
+---
+
 ## 2026-11-26 — Etapa 15: lembretes das tarefas
 
 **Tipo**: Backend + frontend + migration

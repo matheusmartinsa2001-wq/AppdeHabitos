@@ -286,6 +286,59 @@ describe('Tarefas (e2e)', () => {
       .expect(400);
   });
 
+  it('histórico: dia de ontem vermelho com a recorrente não feita; hoje neutro', async () => {
+    const yesterday = addDays(today, -1);
+    const task = await ctx.prisma.task.create({
+      data: {
+        title: 'Ler',
+        repeatDays: 127,
+        createdAt: new Date(`${yesterday}T15:00:00Z`),
+        repeatChanges: {
+          create: {
+            effectiveFrom: new Date(`${yesterday}T00:00:00Z`),
+            repeatDays: 127,
+          },
+        },
+      },
+    });
+    await ctx
+      .http()
+      .post(`/api/tasks/${task.id}/complete`)
+      .set(session.auth)
+      .expect(200);
+
+    const res = await ctx
+      .http()
+      .get('/api/tasks/history')
+      .query({ month: yesterday.slice(0, 7) })
+      .set(session.auth)
+      .expect(200);
+    const body = res.body as {
+      firstDay: string;
+      days: { day: string; status: string; completed: number }[];
+      currentStreak: number;
+    };
+    expect(body.firstDay).toBe(yesterday);
+    expect(body.days.find((d) => d.day === yesterday)).toMatchObject({
+      status: 'missed',
+      completed: 0,
+    });
+    if (yesterday.slice(0, 7) === today.slice(0, 7)) {
+      expect(body.days.find((d) => d.day === today)).toMatchObject({
+        status: 'today',
+        completed: 1,
+      });
+    }
+    expect(body.currentStreak).toBe(1);
+
+    await ctx
+      .http()
+      .get('/api/tasks/history')
+      .query({ month: '2026-13' })
+      .set(session.auth)
+      .expect(400);
+  });
+
   it('id inválido: 400', async () => {
     await ctx
       .http()

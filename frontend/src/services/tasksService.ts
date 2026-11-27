@@ -1,4 +1,4 @@
-import type { TaskInput, TaskLists } from '@/types/tasks'
+import type { TaskInput, TaskLists, TasksHistory } from '@/types/tasks'
 import { api } from './api'
 
 export async function getTaskLists(): Promise<TaskLists> {
@@ -28,5 +28,11 @@ export async function completeTask(id: string): Promise<TaskLists> {
 
 export async function undoCompleteTask(id: string): Promise<TaskLists> {
   const { data } = await api.delete<TaskLists>(`/tasks/${id}/complete`)
+  return data
+}
+
+/** `month` no formato YYYY-MM; sem ele, o mês atual. */
+export async function getTasksHistory(month?: string): Promise<TasksHistory> {
+  const { data } = await api.get<TasksHistory>('/tasks/history', { params: month ? { month } : undefined })
   return data
 }

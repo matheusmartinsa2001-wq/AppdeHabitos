@@ -30,7 +30,7 @@ Divisão proposta, a confirmar junto com a aprovação da Etapa 1:
 
 - ✔ Novo visual e UX das três telas (Hoje, Histórico, Ajustes), sem mudar regras nem API. Entregue em 2026-11-25, aprovado pelo usuário em 2026-11-26.
 
-## Fase 3 — Módulo Tarefas (pedido em 2026-11-26)
+## Fase 3 — Módulo Tarefas (pedido em 2026-11-26, concluído em 2026-11-26)
 
 - ✔ Etapa 11 — Requisitos do módulo Tarefas e da navegação entre módulos (`docs/regras-negocio.md`). Funções e respostas 1–6 aprovadas em 2026-11-26; itens marcados "(proposta)" aprovados em 2026-11-26.
 
@@ -40,7 +40,7 @@ Divisão proposta (2026-11-26), aprovada em 2026-11-26:
 - ✔ Etapa 13 — Tarefas avulsas (aprovada em 2026-11-26): banco, criar/editar/excluir, concluir/desfazer, telas Hoje, Próximas e Atrasadas.
 - ✔ Etapa 14 — Tarefas recorrentes (aprovada em 2026-11-26) (todo dia ou dias da semana), uma ocorrência por dia.
 - ✱ Etapa 15 — Lembretes das tarefas no cron-job.org já existente (aprovada em 2026-11-26; teste no iPhone depois da publicação).
-- ○ Etapa 16 — Histórico de Tarefas: calendário verde/vermelho com concluídas por dia, sequência e percentual.
+- ✔ Etapa 16 — Histórico de Tarefas (aprovada em 2026-11-26): calendário verde/vermelho com concluídas por dia, sequência e percentual.
 
 ## Fase 4+ — Outros hábitos
 

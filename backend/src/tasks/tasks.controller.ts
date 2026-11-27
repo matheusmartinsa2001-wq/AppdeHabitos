@@ -9,23 +9,38 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskListsDto } from './dto/task-lists.dto';
+import { TasksHistoryDto, TasksHistoryQueryDto } from './dto/tasks-history.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TasksHistoryService } from './tasks-history.service';
 import { TasksService } from './tasks.service';
 
 @ApiTags('Tarefas')
 @ApiBearerAuth()
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) {}
+  constructor(
+    private readonly tasksService: TasksService,
+    private readonly historyService: TasksHistoryService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Listas Hoje, Próximas e Atrasadas' })
   getLists(): Promise<TaskListsDto> {
     return this.tasksService.getLists();
+  }
+
+  @Get('history')
+  @ApiOperation({
+    summary:
+      'Histórico do mês: dias verde/vermelho/cinza, concluídas por dia, sequência e percentual',
+  })
+  getHistory(@Query() query: TasksHistoryQueryDto): Promise<TasksHistoryDto> {
+    return this.historyService.getMonth(query.month);
   }
 
   @Post()

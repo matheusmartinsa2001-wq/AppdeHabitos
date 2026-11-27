@@ -218,6 +218,10 @@ As respostas de escrita devolvem as três listas atualizadas, como `GET /tasks`.
 
 - `POST /jobs/water-reminders` (cron, `X-Cron-Secret`) dispara também os lembretes das tarefas. O endereço não mudou, para não mexer no cron-job.org. Resposta: `{ notified: string[], tasks: string[] }` (`tasks` = "HH:MM título" de cada tarefa avisada).
 
+### Histórico das tarefas (Etapa 16)
+
+`GET /tasks/history?month=AAAA-MM` (padrão: mês atual). Resposta: `month`, `days` (cada dia com `day`, `status` = `met` | `missed` | `empty` | `today` | `none`, `completed` = concluídas no dia, `planned` = `{ id, title, done }[]` do que era do dia), `metDays`, `evaluatedDays`, `percent`, `currentStreak`, `firstDay` (dia da primeira tarefa criada), `canGoBack`, `canGoForward`. `400` com mês inválido.
+
 ## Health (`/api/health`)
 
 | Método | Rota | Acesso | Descrição |

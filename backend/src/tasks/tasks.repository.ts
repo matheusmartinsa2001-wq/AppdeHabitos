@@ -129,4 +129,27 @@ export class TasksRepository {
       throw error;
     }
   }
+
+  /**
+   * Todas as tarefas, inclusive as excluídas, com as conclusões e a regra de dias de cada
+   * época, para o histórico (um usuário só: poucas linhas).
+   */
+  listForHistory() {
+    return this.prisma.task.findMany({
+      select: {
+        id: true,
+        title: true,
+        dueDate: true,
+        repeatDays: true,
+        createdAt: true,
+        deletedAt: true,
+        completions: { select: { day: true } },
+        repeatChanges: {
+          select: { effectiveFrom: true, repeatDays: true },
+          orderBy: { effectiveFrom: 'asc' },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
 }

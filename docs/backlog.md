@@ -4,6 +4,7 @@ Manter sempre atualizado. Ao concluir uma feature, mover para "Concluído" e atu
 
 ## Concluído
 
+- [x] **Etapa 16 — Histórico de Tarefas** (2026-11-26): `GET /tasks/history` e a tela Histórico de Tarefas (verde/vermelho/cinza, ✓ por dia, sequência, % e detalhe do dia). Aprovada pelo usuário.
 - [x] **Etapa 15 — Lembretes das tarefas** (2026-11-26): disparo na mesma chamada do cron da Água, `task_reminder_dispatches`, chave de notificações em Ajustes de Tarefas. Aprovada pelo usuário; falta conferir a notificação no iPhone.
 - [x] **Etapa 14 — Tarefas recorrentes** (2026-11-26): `repeatDays` + `task_repeat_changes`, "Repetir" no painel (Todo dia / Alguns dias), ocorrência do dia em Hoje e seção "Recorrentes" em Próximas. Aprovada pelo usuário.
 - [x] **Etapa 13 — Tarefas avulsas** (2026-11-26): tabelas `tasks`/`task_completions`, `/api/tasks`, módulo Tarefas com abas Hoje/Próximas/Atrasadas, criar/editar/excluir, concluir/desfazer. Aprovada pelo usuário.
@@ -65,6 +66,7 @@ Nenhum bug em aberto no momento.
 
 ## Melhorias técnicas (não bloqueantes, sem prioridade definida)
 
+- **Histórico de tarefa avulsa remarcada**: a avulsa guarda só a data atual; remarcar uma atrasada tira o vermelho do dia antigo. Guardar o histórico de datas só se o usuário pedir.
 - **Vibração da notificação**: o app não controla. No iPhone, som e vibração das notificações de apps da web seguem os ajustes do iOS (Ajustes → Notificações → Hábitos → Sons; Sons e Tátil), e o Safari ignora a opção `vibrate`. Orientação passada ao usuário em 2026-11-25.
 
 - **Conferir `TRUST_PROXY_HOPS=2` em produção**: o limite de login deve contar por IP do aparelho, e não pelo IP da Vercel.

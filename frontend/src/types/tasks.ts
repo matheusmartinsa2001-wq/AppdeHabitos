@@ -29,3 +29,27 @@ export interface TaskInput {
   /** null = avulsa. */
   repeat: number[] | null
 }
+
+/** Espelha `TasksHistoryDto` (`GET /api/tasks/history`). */
+export type TaskDayStatus = 'met' | 'missed' | 'empty' | 'today' | 'none'
+
+export interface TaskHistoryDay {
+  day: string
+  status: TaskDayStatus
+  /** Concluídas nesse dia (todas, inclusive as sem data). */
+  completed: number
+  /** O que era do dia, com feita ou não. */
+  planned: { id: string; title: string; done: boolean }[]
+}
+
+export interface TasksHistory {
+  month: string
+  days: TaskHistoryDay[]
+  metDays: number
+  evaluatedDays: number
+  percent: number | null
+  currentStreak: number
+  firstDay: string | null
+  canGoBack: boolean
+  canGoForward: boolean
+}
